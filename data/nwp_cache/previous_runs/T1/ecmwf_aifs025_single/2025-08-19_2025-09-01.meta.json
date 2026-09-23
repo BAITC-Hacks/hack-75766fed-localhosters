@@ -1,0 +1,22 @@
+{
+  "key": "c7d159921419d285370eb6ad8e835c53150143ed1400c9294abe9d5ec7669d26",
+  "url": "https://previous-runs-api.open-meteo.com/v1/forecast",
+  "params": {
+    "latitude": 43.64515,
+    "longitude": 78.535604,
+    "models": "ecmwf_aifs025_single",
+    "hourly": "wind_speed_100m_previous_day1,wind_speed_100m_previous_day2,wind_speed_10m_previous_day1,wind_speed_10m_previous_day2,wind_direction_100m_previous_day1,wind_direction_100m_previous_day2,temperature_2m_previous_day1,temperature_2m_previous_day2,surface_pressure_previous_day1,surface_pressure_previous_day2",
+    "start_date": "2025-08-19",
+    "end_date": "2025-09-01",
+    "timezone": "UTC",
+    "wind_speed_unit": "ms"
+  },
+  "fetched_at": "2026-09-23T10:53:39.879925+00:00",
+  "sha256": "8964201655be631440bac0d0ff04e58132667f8fecf687ec3f8e9e514ec45b0e",
+  "grid": {
+    "latitude": 43.75,
+    "longitude": 78.5,
+    "elevation": 555.0
+  },
+  "path": "data/nwp_cache/previous_runs/T1/ecmwf_aifs025_single/2025-08-19_2025-09-01.json"
+}

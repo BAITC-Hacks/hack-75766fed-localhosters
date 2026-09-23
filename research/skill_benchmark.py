@@ -26,13 +26,32 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
-from research.openmeteo_client import CACHE_DIR, CACHE_ONLY, PREV_MODELS, hourly_df_from_json, previous_runs  # noqa: E402
+from research.openmeteo_client import (  # noqa: E402
+    CACHE_DIR,
+    CACHE_ONLY,
+    PREV_MODELS,
+    hourly_df_from_json,
+    previous_runs,
+)
 from research.scada_load import load_hourly  # noqa: E402
 
 DEFAULT_START, DEFAULT_END = "2025-11-01", "2026-01-31"
 
 
 def cached_previous_runs(model: str) -> pd.DataFrame | None:
+    parquet = CACHE_DIR / "previous_runs" / f"{model}.parquet"
+    if parquet.exists():
+        df = pd.read_parquet(parquet).set_index("valid_utc").drop(columns=["site_id", "model"])
+        df.index.name = "ts"
+        manifest = CACHE_DIR / "previous_runs" / "manifest.json"
+        if manifest.exists():
+            import json
+
+            metadata = json.loads(manifest.read_text(encoding="utf-8"))
+            grid = metadata["models"][model]["grid"]
+            df.attrs["grid"] = (grid["latitude"], grid["longitude"])
+        df.attrs["files"] = [str(parquet.relative_to(REPO))]
+        return df
     files = sorted(CACHE_DIR.glob(f"previous_runs_*/{model}.json"))
     if not files:
         return None
@@ -92,7 +111,7 @@ def main() -> int:
     print(f"\n=== forecast wind vs SCADA ws, hourly UTC, {a.start}..{a.end} (day1 = lead 24-29 ч, day2 = 48-53 ч) ===")
     print(res.to_string(index=False))
     if empty:
-        print(f"\nпропущено (нет пересечения с SCADA в окне, есть только в Feb-2026 кеше): {empty}")
+        print(f"\nпропущено (нет данных у модели или пересечения с SCADA): {empty}")
     for t, sc in scada.items():
         j = sc.dropna(subset=["ws", "p"])
         print(f"\n{t}: SCADA ws -> p r = {j.ws.corr(j.p):.3f} (n={len(j)}) — практический потолок для r_power")
