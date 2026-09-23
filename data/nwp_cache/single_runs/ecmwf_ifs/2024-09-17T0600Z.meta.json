@@ -1,0 +1,22 @@
+{
+  "key": "8430fba5b2c2b6f189d8835aca2b50fc7a81a0e25d0ee7c636eef4d102745048",
+  "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+  "params": {
+    "latitude": 43.64515,
+    "longitude": 78.535604,
+    "run": "2024-09-17T06:00",
+    "models": "ecmwf_ifs",
+    "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+    "forecast_days": 4,
+    "timezone": "UTC",
+    "wind_speed_unit": "ms"
+  },
+  "fetched_at": "2026-09-23T11:15:13.436707+00:00",
+  "sha256": "848b79b594602bf233127ec0c1e403f88531aba5e58016d80d2c6b6c5a1c9066",
+  "grid": {
+    "latitude": 43.620384,
+    "longitude": 78.47891,
+    "elevation": 555.0
+  },
+  "path": "data/nwp_cache/single_runs/ecmwf_ifs/2024-09-17T0600Z.json"
+}
