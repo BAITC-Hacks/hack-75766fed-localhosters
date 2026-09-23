@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-09T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Качество данных пройдено, превышения порога нет: расхождение ветра 0.85 м/с при пороге 1.5 м/с. Нужна новая публикация по новому NWP запуску; средняя абсолютная дельта мощности 0.155.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-25T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Новый NWP-ран доступен, поэтому публикуем обновление для диспетчера. Расхождение по ветру 0.175 м/с, дельта мощности 0.116; изменение ниже порога 1.5 м/с, но релиз нужен из-за нового прогона.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

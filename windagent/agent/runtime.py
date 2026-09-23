@@ -220,11 +220,21 @@ def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_
         comparison = trace.call("compare_with_previous", {}, lambda: compare_with_previous(previous, forecasts, weather))
         context = {**comparison, "quality": quality.model_dump(), "nwp_run_init_utc": iso(nwp.run_init_utc),
                    "threshold_ms": settings.divergence_threshold_ms, "reissue_on_new_run": settings.reissue_on_new_run}
-        decision = planner.decide(context)
-        if decision.used_runs != [iso(nwp.run_init_utc)] or decision.corrections:
-            raise ValueError("UNSUPPORTED_DECISION: invented source or unapplied correction")
-        trace.rows[-1].update(decision=decision.reason, rationale=decision.summary_ru, tokens=getattr(planner, "usage", {"input": 0, "output": 0}))
-        write_json(directory / "decision.json", decision.model_dump())
+        fallback_reason = None
+        try:
+            decision = planner.decide(context)
+            if decision.used_runs != [iso(nwp.run_init_utc)] or decision.corrections:
+                raise ValueError("UNSUPPORTED_DECISION: invented source or unapplied correction")
+        except Exception as error:
+            if planner.mode == "scripted":
+                raise
+            # An LLM outage or an unverifiable LLM answer must not stop the replay: decide by the scripted rules.
+            fallback_reason = f"{type(error).__name__}: {error}"[:300]
+            decision = ScriptedPlanner().decide(context)
+        planner_meta = {"planner": planner.mode, "model_id": getattr(planner, "model", None), "fallback_reason": fallback_reason}
+        trace.rows[-1].update(decision=decision.reason, rationale=decision.summary_ru,
+                              tokens=getattr(planner, "usage", {"input": 0, "output": 0}), **planner_meta)
+        write_json(directory / "decision.json", {**decision.model_dump(), **planner_meta})
         write_json(directory / "comparison.json", comparison)
         trace.call("save_forecast", {"publish": decision.publish},
                    lambda: save_forecast(directory / "forecast.csv", forecasts, inputs, settings)

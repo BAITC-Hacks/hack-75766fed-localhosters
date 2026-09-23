@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-24T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Порог качества пройден, принимаем новый выпуск по доступному NWP-рану 2026-02-24T06:00:00Z. Расхождение ветра 1.66 м/с выше порога 1.5 м/с, при этом изменение мощности по контексту составляет 0.12.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

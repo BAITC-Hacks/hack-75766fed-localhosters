@@ -6,5 +6,8 @@
   ],
   "corrections": [],
   "reissue_recommended": false,
-  "summary_ru": "Прогноз прошёл проверку входных данных."
+  "summary_ru": "Прогноз прошёл проверку входных данных.",
+  "planner": "scripted",
+  "model_id": null,
+  "fallback_reason": null
 }

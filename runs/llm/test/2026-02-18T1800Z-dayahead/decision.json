@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-18T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": false,
+  "summary_ru": "Новый NWP-ран доступен, публикуем обновление по нему. Расхождение по ветру 0.27 м/с ниже порога 1.5 м/с, при этом изменение мощности незначительное.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

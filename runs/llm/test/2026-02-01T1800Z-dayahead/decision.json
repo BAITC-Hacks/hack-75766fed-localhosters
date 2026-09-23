@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-01T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Качество данных пройдено, выпуск разрешён по новому NWP-рану. Расхождение ветра 0.263 м/с, дельта мощности 0.058; при старом выпуске это ниже порога и требует новой версии только из‑за нового запуска.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

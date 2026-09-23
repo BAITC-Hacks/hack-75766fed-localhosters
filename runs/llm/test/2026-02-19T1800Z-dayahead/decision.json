@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-19T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Новая версия прогноза публикуется по свежему NWP run. Отклонение ветра 0.826 м/с ниже порога 1.5 м/с, прошлый выпуск пересматривается; разница по мощности составляет 0.179.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}
