@@ -34,9 +34,9 @@ SINGLE_RUNS_PATH: Final = ROOT / "data/nwp/single_runs_ecmwf_ifs_train.parquet"
 PREVIOUS_RUNS_PATH: Final = ROOT / "data/baselines/previous_runs_ws100.parquet"
 SCADA_PATH: Final = ROOT / "data/processed/scada_hourly.parquet"
 MODEL_PATH: Final = ROOT / "models/lightgbm_v1.txt"
-# Same features and params, fitted without the two holdout windows: used by the agent for issues inside them.
+# Same features and params, fitted without the two holdout windows: serves issues inside them, so replays of
+# Feb 2025 / Jan 2026 stay out-of-sample (the final model above is refit on every clean row, Jan 2026 included).
 HOLDOUT_MODEL_PATH: Final = ROOT / "models/lightgbm_v1_holdout.txt"
-SINGLE_RUN_CACHE: Final = ROOT / "data/nwp_cache/single_runs/ecmwf_ifs"
 METADATA_PATH: Final = ROOT / "models/lightgbm_v1.metadata.json"
 REPORT_PATH: Final = ROOT / "reports/lightgbm_v1.csv"
 DOC_PATH: Final = ROOT / "docs/research/lightgbm-v1.md"
@@ -132,6 +132,13 @@ def _require_columns(frame: pd.DataFrame, required: set[str], source: str) -> No
         raise ValueError(f"{source} misses columns: {sorted(missing)}")
 
 
+def _issue_time(rows: pd.DataFrame) -> pd.Series:
+    """Issue time per row: the dayahead 18:00 UTC, or an explicit issue_time_utc (LOC-12 serving, reissues)."""
+    if "issue_time_utc" in rows:
+        return pd.to_datetime(rows["issue_time_utc"], utc=True)
+    return pd.to_datetime(rows["issue_day"], utc=True) + pd.Timedelta(hours=ISSUE_HOUR_UTC)
+
+
 def _holdout_mask(issue_day: pd.Series, holdout: Holdout) -> pd.Series:
     days = pd.to_datetime(issue_day).dt.tz_localize(None)
     return days.ge(holdout.issue_start) & days.lt(holdout.issue_end)
@@ -186,13 +193,6 @@ def _load_previous_runs(path: Path = PREVIOUS_RUNS_PATH) -> pd.DataFrame:
     _require_columns(frame, required, path.name)
     frame["valid_utc"] = pd.to_datetime(frame["valid_utc"], utc=True)
     return frame.sort_values(["model", "valid_utc"], ignore_index=True)
-
-
-def _issue_time(rows: pd.DataFrame) -> pd.Series:
-    """Issue moment per row: explicit ``issue_time`` (agent, e.g. a 20:00 UTC reissue) or issue_day + 18h."""
-    if "issue_time" in rows:
-        return pd.to_datetime(rows["issue_time"], utc=True)
-    return pd.to_datetime(rows["issue_day"], utc=True) + pd.Timedelta(hours=ISSUE_HOUR_UTC)
 
 
 def _select_previous_run(
@@ -591,71 +591,6 @@ def run(
     return report, metadata
 
 
-# ---------------------------------------------------------------- agent adapter (LOC-12 contract)
-
-_boosters: dict[Path, lgb.Booster] = {}
-_previous_runs: pd.DataFrame | None = None
-
-
-def _booster(path: Path) -> lgb.Booster:
-    if path not in _boosters:
-        if not path.exists():
-            raise FileNotFoundError(f"{path} missing: run `python -m windagent.model.v1`")
-        _boosters[path] = lgb.Booster(model_file=str(path))
-    return _boosters[path]
-
-
-def model_path_for(issue_time: pd.Timestamp) -> Path:
-    """Holdout-window issues use the model fitted without them; everything else the final model."""
-    issue_day = issue_time.tz_convert("UTC").tz_localize(None).normalize()
-    for holdout in HOLDOUTS:
-        if pd.Timestamp(holdout.issue_start) <= issue_day <= pd.Timestamp(holdout.issue_end):
-            return HOLDOUT_MODEL_PATH
-    return MODEL_PATH
-
-
-def predict_power(request: dict) -> dict:
-    """Agent adapter: same features as training, built from the NWP run the agent selected as-of the issue.
-
-    The runtime passes only wind/direction/temperature, so the full run (80/10 m wind, gusts, pressure) is read
-    from the same cached Open-Meteo response; Previous Runs are selected with the publication-lag rule at the
-    actual issue time. P10/P90 are v0 residual quantiles around the v1 point until LOC-11 ships quantile models.
-    """
-    global _previous_runs
-    origin = pd.Timestamp(request["forecast_origin_utc"])
-    run = pd.Timestamp(request["weather_run_time_utc"])
-    raw = json.loads((SINGLE_RUN_CACHE / f"{run.strftime('%Y-%m-%dT%H%M')}Z.json").read_text())["hourly"]
-    nwp = pd.DataFrame(raw).rename(columns={"time": "valid_utc"})
-    nwp["valid_utc"] = pd.to_datetime(nwp["valid_utc"], utc=True)
-    targets = pd.to_datetime([row["valid_time_utc"] for row in request["hourly"]], utc=True)
-    rows = nwp.set_index("valid_utc").reindex(targets).reset_index().rename(columns={"index": "valid_utc"})
-    rows["run_init_utc"] = run
-    rows["lead_h"] = ((rows["valid_utc"] - run).dt.total_seconds() / 3600).astype(int)
-    rows["run_cycle"] = run.hour
-    rows["issue_day"] = origin.tz_convert("UTC").tz_localize(None).normalize()
-    rows["issue_time"] = origin
-    if _previous_runs is None:
-        _previous_runs = _load_previous_runs()
-    features = _base_features(rows, _previous_runs)
-    features["turbine_code"] = 0.0 if request["turbine_id"] == "turbine_1" else 1.0
-    p50 = predict(_booster(model_path_for(origin)), features)
-    p10, p90 = v0.interval_around(p50)
-    return {
-        "schema_version": "1.0",
-        "model_version": MODEL_VERSION,
-        "prediction_kind": "model",
-        "turbine_id": request["turbine_id"],
-        "forecast_origin_utc": request["forecast_origin_utc"],
-        "horizon_hours": request["horizon_hours"],
-        "interval_label": "start",
-        "hourly": [
-            {"valid_time_utc": row["valid_time_utc"], "power_normalized": float(p50[i]),
-             "p10": float(p10[i]), "p90": float(p90[i])}
-            for i, row in enumerate(request["hourly"])
-        ],
-    }
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -686,6 +621,22 @@ def main() -> None:
             ]
         ].to_string(index=False)
     )
+
+
+def model_path_for(issue_time) -> Path:
+    """Issues inside a holdout window use the holdout-free model; everything else the final model."""
+    issue_day = pd.Timestamp(issue_time).tz_convert("UTC").tz_localize(None).normalize()
+    for holdout in HOLDOUTS:
+        if pd.Timestamp(holdout.issue_start) <= issue_day <= pd.Timestamp(holdout.issue_end):
+            return HOLDOUT_MODEL_PATH
+    return MODEL_PATH
+
+
+def predict_power(request: dict) -> dict:
+    """LOC-12 agent adapter: `--model-adapter windagent.model.v1:predict_power` (see windagent.model.serve)."""
+    from windagent.model.serve import predict_power as serve
+
+    return serve(request)
 
 
 if __name__ == "__main__":

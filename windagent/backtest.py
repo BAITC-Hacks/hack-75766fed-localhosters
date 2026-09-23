@@ -55,10 +55,31 @@ def load_runs() -> dict[datetime, pd.DataFrame]:
 
 
 def load_model(name: str):
+    """-> (predict(nwp_run_frame, issue, turbine) -> DataFrame[p50, p10, p90] per target hour, model_version)."""
     if name == "v0":
         from windagent.model import v0
         params = v0.load_params()
-        return lambda ws: v0.predict_series(ws, params), params["model_version"]
+
+        def predict_v0(nwp, issue, turbine):
+            ws = nwp.reindex(pd.DatetimeIndex(clock.targets(issue)))["wind_speed_100m"]
+            if ws.isna().any():
+                raise RuntimeError(f"run does not cover horizon of issue {issue}")
+            return v0.predict_series(ws.values, params)
+        return predict_v0, params["model_version"]
+    if name == "v1":
+        from windagent.model.schema import build_features
+        from windagent.model.serve import load_model as load_v1
+        from windagent.model.serve import predict, previous_runs_archive
+        from windagent.model.v1 import model_path_for
+        _, meta = load_v1()
+        prev = previous_runs_archive()
+
+        def predict_v1(nwp, issue, turbine):
+            # holdout windows (Jan 2026 dev) use the holdout-free model, so dev MAE stays out-of-sample
+            booster, _ = load_v1(model_path_for(issue))
+            f = build_features(nwp.reset_index(), issue, turbine, prev)
+            return predict(f, booster)
+        return predict_v1, meta["model_version"]
     raise ValueError(f"unknown model {name}")
 
 
@@ -73,11 +94,8 @@ def run_window(window: str, model: str = "v0") -> pd.DataFrame:
             raise RuntimeError(f"no available run for issue {issue}")
         nwp = runs[run_init]
         tgt = clock.targets(issue)
-        ws = nwp.reindex(pd.DatetimeIndex(tgt))["wind_speed_100m"]
-        if ws.isna().any():
-            raise RuntimeError(f"run {run_init} does not cover horizon of issue {issue}")
-        pred = predict(ws.values)
         for turbine in TURBINES:
+            pred = predict(nwp, issue, turbine)
             for i, t in enumerate(tgt):
                 rows.append({
                     "issue_time_utc": clock.iso_utc(issue),

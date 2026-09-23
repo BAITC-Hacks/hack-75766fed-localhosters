@@ -22,6 +22,11 @@ class WeatherHour(Contract):
     wind_speed_100m_ms: float = Field(ge=0, le=100)
     wind_direction_100m_deg: float = Field(ge=0, le=360)
     temperature_2m_c: float = Field(ge=-100, le=70)
+    # Optional since LOC-12: the v1 model needs them, v0 and the demo curve do not.
+    wind_speed_80m_ms: float | None = Field(default=None, ge=0, le=100)
+    wind_speed_10m_ms: float | None = Field(default=None, ge=0, le=100)
+    wind_gusts_10m_ms: float | None = Field(default=None, ge=0, le=150)
+    surface_pressure_hpa: float | None = Field(default=None, ge=300, le=1100)
     _utc = field_validator("valid_time_utc")(utc)
 
 

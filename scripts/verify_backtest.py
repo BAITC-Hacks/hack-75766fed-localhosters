@@ -44,6 +44,11 @@ def main():
         inputs = json.loads((run_dir / "inputs.json").read_text())
         assert inputs["nwp_run_init_utc"].endswith("T12:00:00Z"), run_dir
         assert json.loads((run_dir / "decision.json").read_text())["reissue_recommended"], run_dir
+    # ...and the submission model through the agent == the same model computed directly
+    with path.open() as file:
+        agent_primary = [(r["issue_time_utc"], r["turbine"], r["lead_h"], float(r["p50"])) for r in csv.DictReader(file)]
+    direct_primary = run_window("test", PRIMARY_MODEL)
+    assert agent_primary == [(r.issue_time_utc, r.turbine, str(r.lead_h), float(r.p50)) for r in direct_primary.itertuples()]
     with path.open() as file:
         rows = list(csv.DictReader(file))
     with flat_path.open() as file:
@@ -65,7 +70,7 @@ def main():
             revision = list(csv.DictReader(file))
         assert len(revision) == 96 and all(r["nwp_run_init_utc"] == "2026-01-31T12:00:00Z" for r in revision)
         assert first != second
-    print(f"PASS: {PRIMARY_MODEL} — 29 issues via agent + 29 reissues (11-step traces); v0 agent == direct model; "
+    print(f"PASS: {PRIMARY_MODEL} — 29 issues via agent + 29 reissues (11-step traces); v0 and {PRIMARY_MODEL} agent == direct model; "
           "2784 rows, 1344 hourly rows, all as-of, 19Z rejects 12Z, real 06Z→12Z revision")
 
 
