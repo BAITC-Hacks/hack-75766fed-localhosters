@@ -13,6 +13,10 @@
 Каждый сохранённый ран имеет `run_init_utc`. Для ECMWF IFS применяем лаги по циклам: 00Z +8 ч, 06Z +7 ч, 12Z +8 ч, 18Z +7 ч. Выпуск 31 января 19:00 UTC ещё не может читать 12Z ран; 20:00 — может. Модель видит прогнозы из as-issued Single Runs. Схема интервалов и ограничения источников: [as-of-convention](docs/research/as-of-convention.md). SCADA размечена фиксированным UTC+6.
 Доказательство таймзоны: [tz_xcorr.png](docs/figures/tz_xcorr.png), обработка через `Etc/GMT-6` и [scripts/tz_check.py](scripts/tz_check.py).
 
+## Метрика, которую надо побить (LOC-9)
+
+Честный case-compliant бейзлайн Previous Runs `ws100` → refit-кривая даёт **MAE 0.20–0.22** по нормализованной мощности (h1–24) и около **0.22** на h25–48. Цель модели — MAE ≤0.19 (skill ≥10%), приемлемый результат — ≤0.22. ERA5 и будущий SCADA-ветер в эти бейзлайны не входят: это недоступные на issue-time потолки. Воспроизводимые таблицы: [docs/research/baselines.md](docs/research/baselines.md), полный CSV: [reports/baselines.csv](reports/baselines.csv).
+
 ## Технологии
 
 Python 3.12, uv, pandas/pyarrow, Pydantic AI, Open-Meteo Single Runs. Числовая v0-модель — MOS к ветру + эмпирическая логистическая кривая мощности; LightGBM v1 готовит Akylbek (LOC-10/12). Архив 116 февральских ранов, 31 dev-ран и HTTP-клиент Ramazan описаны в [документе погоды](docs/03_WEATHER_ARCHIVE.md) и [бэктесте](docs/research/backtest-v0.md).
@@ -44,6 +48,14 @@ uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted 
 
 Выход каждого запуска: `runs/<timestamp>-<id>/{forecast.csv,inputs.json,dq_report.json,comparison.json,decision.json,trace.jsonl,report.md,memory.json,status.json}`. Результаты разделены по версиям. Синтетический режим запускается отдельно: `make demo`, каждый файл там обозначен `prediction_kind=demo`.
 
+Интерактивный дашборд — все 60 выпусков (январь с фактами, февраль), прогноз с P10–P90, пересчёт 18:00 → 20:00 UTC, трейс агента по шагам:
+
+```bash
+make dashboard        # экспорт данных + http://127.0.0.1:5173
+```
+
+Развёрнутая версия: https://windagent-localhosters.pages.dev (закрыта паролем — в данных SCADA организаторов; логин `localhosters`, пароль у команды).
+
 ## Previous Runs для пяти моделей (LOC-15)
 
 Почасовые признаки `previous_day1/day2` за доступную историю каждой модели,
@@ -56,14 +68,6 @@ uv run --frozen python research/skill_benchmark.py --turbine T1
 ```
 
 Схема данных, покрытие, пропуски и skill: [docs/research/nwp-sources.md](docs/research/nwp-sources.md).
-
-Интерактивный дашборд — все 60 выпусков (январь с фактами, февраль), прогноз с P10–P90, пересчёт 18:00 → 20:00 UTC, трейс агента по шагам:
-
-```bash
-make dashboard        # экспорт данных + http://127.0.0.1:5173
-```
-
-Развёрнутая версия: https://windagent-localhosters.pages.dev (закрыта паролем — в данных SCADA организаторов; логин `localhosters`, пароль у команды).
 
 ## Зависимости
 

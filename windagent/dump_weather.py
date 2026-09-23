@@ -38,7 +38,11 @@ def to_frame(run: str, data: dict) -> pd.DataFrame:
             raise ValueError(f"Unexpected unit for {name}")
     frame = pd.DataFrame(data["hourly"])
     frame = frame.rename(columns={"time": "valid_utc"})
-    frame["valid_utc"] = pd.to_datetime(frame["valid_utc"], utc=True)
+    # Keep the committed Parquet schema stable across pandas 2/3, whose timestamp
+    # parser defaults differ (ns versus us precision).
+    frame["valid_utc"] = pd.to_datetime(frame["valid_utc"], utc=True).astype(
+        "datetime64[us, UTC]"
+    )
     frame["run_init_utc"] = pd.Timestamp(run_datetime(run))
     lead = (frame.valid_utc - frame.run_init_utc).dt.total_seconds() / 3600
     if not (lead == lead.round()).all() or frame.valid_utc.duplicated().any():
