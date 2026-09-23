@@ -56,6 +56,19 @@ make dashboard        # экспорт данных + http://127.0.0.1:5173
 
 Развёрнутая версия: https://windagent-localhosters.pages.dev (закрыта паролем — в данных SCADA организаторов; логин `localhosters`, пароль у команды).
 
+## Previous Runs для пяти моделей (LOC-15)
+
+Почасовые признаки `previous_day1/day2` за доступную историю каждой модели,
+исходные JSON и Parquet находятся в `data/nwp_cache/previous_runs/`.
+Повторная сборка без сети:
+
+```bash
+OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent.dump_previous_runs
+uv run --frozen python research/skill_benchmark.py --turbine T1
+```
+
+Схема данных, покрытие, пропуски и skill: [docs/research/nwp-sources.md](docs/research/nwp-sources.md).
+
 ## Зависимости
 
 Версии зафиксированы в `uv.lock`; Python-пакет и dev-зависимости — в `pyproject.toml`. Для `make backtest-v0` сеть и API-ключ не нужны. Происхождение данных: [research/README.md](research/README.md).

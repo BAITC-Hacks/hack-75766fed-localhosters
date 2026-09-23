@@ -14,8 +14,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Self
 
+import pandas as pd
 import requests
 import requests_cache
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SINGLE_URL = "https://single-runs-api.open-meteo.com/v1/forecast"
@@ -31,6 +33,51 @@ VARIABLES = (
 )
 T1 = (43.645150, 78.535604)
 T2 = (43.643198, 78.538828)
+PREVIOUS_MODELS = {
+    "icon_global": "2024-02-16",
+    "gfs_global": "2024-02-16",
+    "ecmwf_ifs025": "2024-03-06",
+    "ecmwf_aifs025_single": "2025-02-18",
+    "ecmwf_ifs": "2025-10-01",
+}
+PREVIOUS_VARIABLES = {
+    "ws100": "wind_speed_100m",
+    "ws80": "wind_speed_80m",
+    "ws10": "wind_speed_10m",
+    "dir100": "wind_direction_100m",
+    "T2m": "temperature_2m",
+    "sp": "surface_pressure",
+    "gusts": "wind_gusts_10m",
+}
+DEFAULT_PREVIOUS_VARS = ("ws100", "ws80", "ws10", "dir100", "T2m", "sp")
+COARSE_ECMWF = {"ecmwf_ifs025", "ecmwf_aifs025_single"}
+
+
+def site_coordinates(site_id: str) -> tuple[float, float]:
+    """Read the approved site registry, not an arbitrary caller-supplied path."""
+    if site_id not in {"T1", "T2"}:
+        raise ValueError(f"Unknown site_id: {site_id}")
+    path = ROOT / "config" / "sites" / f"{site_id}.yaml"
+    site = yaml.safe_load(path.read_text(encoding="utf-8"))
+    latitude, longitude = float(site["latitude"]), float(site["longitude"])
+    if not -90 <= latitude <= 90 or not -180 <= longitude <= 180:
+        raise ValueError(f"Invalid coordinates for {site_id}")
+    return latitude, longitude
+
+
+def previous_variable_names(model: str, variables: tuple[str, ...]) -> tuple[str, ...]:
+    if model not in PREVIOUS_MODELS:
+        raise ValueError(f"Unsupported Previous Runs model: {model}")
+    if not variables:
+        raise ValueError("At least one Previous Runs variable is required")
+    invalid = set(variables) - PREVIOUS_VARIABLES.keys()
+    if invalid:
+        raise ValueError(f"Unsupported Previous Runs variables: {sorted(invalid)}")
+    if "gusts" in variables and model not in {"icon_global", "gfs_global"}:
+        raise ValueError(f"wind_gusts_10m is unavailable for {model}")
+    if "ws80" in variables and model in COARSE_ECMWF:
+        raise ValueError(f"wind_speed_80m is unavailable for {model}")
+    return tuple(PREVIOUS_VARIABLES[name] for name in dict.fromkeys(variables))
 
 
 class CacheMissError(RuntimeError):
@@ -102,10 +149,18 @@ class WeatherClient:
         self.close()
 
     def om_get(
-        self, url: str, params: dict[str, Any], *, artifact: Path | None = None
+        self,
+        url: str,
+        params: dict[str, Any],
+        *,
+        artifact: Path | None = None,
+        site_id: str | None = None,
     ) -> dict[str, Any]:
         if url not in (SINGLE_URL, PREVIOUS_URL):
             raise ValueError("Only the configured Open-Meteo endpoints are supported")
+        if site_id is not None:
+            latitude, longitude = site_coordinates(site_id)
+            params = {**params, "latitude": latitude, "longitude": longitude}
         params = normalized_params(params)
         key = request_key(url, params)
         artifact = artifact or Path("data/nwp_cache/requests") / f"{key}.json"
@@ -167,13 +222,17 @@ class WeatherClient:
         model: str = "ecmwf_ifs",
         forecast_days: int = 4,
         *,
-        latitude: float = T1[0],
-        longitude: float = T1[1],
+        site_id: str = "T1",
+        latitude: float | None = None,
+        longitude: float | None = None,
     ) -> dict[str, Any]:
         if model != "ecmwf_ifs":
             raise ValueError("This archive currently supports only ecmwf_ifs")
         if not 1 <= forecast_days <= 10:
             raise ValueError("forecast_days must be in 1..10")
+        site_latitude, site_longitude = site_coordinates(site_id)
+        latitude = site_latitude if latitude is None else latitude
+        longitude = site_longitude if longitude is None else longitude
         run = run_datetime(run_iso).strftime("%Y-%m-%dT%H:%M")
         params = {
             "latitude": latitude,
@@ -190,12 +249,86 @@ class WeatherClient:
             )
         return self.om_get(SINGLE_URL, params, artifact=artifact)
 
-    def previous_day(self) -> dict[str, Any]:
+    def previous_runs(
+        self,
+        model: str,
+        start: str,
+        end: str,
+        variables: tuple[str, ...] = DEFAULT_PREVIOUS_VARS,
+        *,
+        site_id: str = "T1",
+    ) -> pd.DataFrame:
+        """Fetch day1/day2 features in inclusive, at most 14-day UTC chunks."""
+        names = previous_variable_names(model, variables)
+        latitude, longitude = site_coordinates(site_id)
+        first, last = pd.Timestamp(start), pd.Timestamp(end)
+        if first.tzinfo is not None or last.tzinfo is not None:
+            raise ValueError("start and end must be UTC calendar dates")
+        if first != first.normalize() or last != last.normalize() or first > last:
+            raise ValueError("Provide an ordered range of UTC calendar dates")
+        if first < pd.Timestamp(PREVIOUS_MODELS[model]):
+            raise ValueError(f"{model} archive starts {PREVIOUS_MODELS[model]}")
+        hourly = ",".join(
+            f"{name}_previous_day{day}" for name in names for day in (1, 2)
+        )
+        parts = []
+        cursor = first
+        while cursor <= last:
+            stop = min(cursor + pd.Timedelta(days=13), last)
+            start_date, end_date = cursor.date().isoformat(), stop.date().isoformat()
+            params = {
+                "latitude": latitude,
+                "longitude": longitude,
+                "models": model,
+                "hourly": hourly,
+                "start_date": start_date,
+                "end_date": end_date,
+            }
+            artifact = Path(
+                f"data/nwp_cache/previous_runs/{site_id}/{model}/"
+                f"{start_date}_{end_date}.json"
+            )
+            data = self.om_get(PREVIOUS_URL, params, artifact=artifact)
+            if data.get("utc_offset_seconds") != 0:
+                raise ValueError(f"Previous Runs response is not UTC: {artifact}")
+            expected = pd.date_range(
+                start_date, end_date + " 23:00", freq="h", tz="UTC"
+            )
+            hourly_data = data["hourly"]
+            frame = pd.DataFrame(hourly_data)
+            if len(frame) != len(expected):
+                raise ValueError(f"Incomplete hourly grid: {artifact}")
+            frame = frame.rename(columns={"time": "valid_utc"})
+            frame["valid_utc"] = pd.to_datetime(frame["valid_utc"], utc=True)
+            if (
+                not frame["valid_utc"]
+                .reset_index(drop=True)
+                .equals(pd.Series(expected))
+            ):
+                raise ValueError(f"Unexpected hourly timestamps: {artifact}")
+            for name in names:
+                for day in (1, 2):
+                    column = f"{name}_previous_day{day}"
+                    unit = data["hourly_units"].get(column)
+                    if name.startswith("wind_speed") or name == "wind_gusts_10m":
+                        if unit != "m/s":
+                            raise ValueError(f"Unexpected unit {unit!r} for {column}")
+                    if column not in frame:
+                        raise ValueError(f"Missing column {column}: {artifact}")
+            parts.append(frame)
+            cursor = stop + pd.Timedelta(days=1)
+        result = pd.concat(parts, ignore_index=True)
+        if result["valid_utc"].duplicated().any():
+            raise ValueError("Duplicate Previous Runs timestamps")
+        return result
+
+    def previous_day(self, *, site_id: str = "T1") -> dict[str, Any]:
+        latitude, longitude = site_coordinates(site_id)
         return self.om_get(
             PREVIOUS_URL,
             {
-                "latitude": T1[0],
-                "longitude": T1[1],
+                "latitude": latitude,
+                "longitude": longitude,
                 "models": "ecmwf_ifs",
                 "hourly": "wind_speed_100m_previous_day1",
                 "start_date": "2026-02-01",
@@ -204,13 +337,31 @@ class WeatherClient:
         )
 
 
-def om_get(url: str, params: dict[str, Any]) -> dict[str, Any]:
+def om_get(
+    url: str, params: dict[str, Any], *, site_id: str | None = None
+) -> dict[str, Any]:
     with WeatherClient() as client:
-        return client.om_get(url, params)
+        return client.om_get(url, params, site_id=site_id)
 
 
 def single_run(
-    run_iso: str, model: str = "ecmwf_ifs", forecast_days: int = 4
+    run_iso: str,
+    model: str = "ecmwf_ifs",
+    forecast_days: int = 4,
+    *,
+    site_id: str = "T1",
 ) -> dict[str, Any]:
     with WeatherClient() as client:
-        return client.single_run(run_iso, model, forecast_days)
+        return client.single_run(run_iso, model, forecast_days, site_id=site_id)
+
+
+def previous_runs(
+    model: str,
+    start: str,
+    end: str,
+    variables: tuple[str, ...] = DEFAULT_PREVIOUS_VARS,
+    *,
+    site_id: str = "T1",
+) -> pd.DataFrame:
+    with WeatherClient() as client:
+        return client.previous_runs(model, start, end, variables, site_id=site_id)
