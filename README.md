@@ -44,6 +44,14 @@ uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted 
 
 Выход каждого запуска: `runs/<timestamp>-<id>/{forecast.csv,inputs.json,dq_report.json,comparison.json,decision.json,trace.jsonl,report.md,memory.json,status.json}`. Результаты разделены по версиям. Синтетический режим запускается отдельно: `make demo`, каждый файл там обозначен `prediction_kind=demo`.
 
+Интерактивный дашборд — все 60 выпусков (январь с фактами, февраль), прогноз с P10–P90, пересчёт 18:00 → 20:00 UTC, трейс агента по шагам:
+
+```bash
+make dashboard        # экспорт данных + http://127.0.0.1:5173
+```
+
+Развёрнутая версия: https://windagent-localhosters.pages.dev (закрыта паролем — в данных SCADA организаторов; логин `localhosters`, пароль у команды).
+
 ## Зависимости
 
 Версии зафиксированы в `uv.lock`; Python-пакет и dev-зависимости — в `pyproject.toml`. Для `make backtest-v0` сеть и API-ключ не нужны. Происхождение данных: [research/README.md](research/README.md).
@@ -70,7 +78,7 @@ make verify
 
 ## Ограничения и развитие
 
-Текущий бэктест исполняет day-ahead 18:00 UTC и одну сцену пересчёта. Эмпирические P10/P90 требуют проверки покрытия; live-цикл с фактическими измерениями ещё не подключён. Дашборд LOC-26 показывает срез 15–19 января и сцену re-issue; [сценарий демо](docs/demo-storyboard.md). В [rubric-map](docs/research/rubric-map.md) указан статус доказательств по критериям жюри.
+Текущий бэктест исполняет day-ahead 18:00 UTC и одну сцену пересчёта. Эмпирические P10/P90 требуют проверки покрытия; live-цикл с фактическими измерениями ещё не подключён. Дашборд показывает все выпуски и сцену re-issue на каждый февральский день; [сценарий демо](docs/demo-storyboard.md). В [rubric-map](docs/research/rubric-map.md) указан статус доказательств по критериям жюри.
 
 ## Почему не X
 
