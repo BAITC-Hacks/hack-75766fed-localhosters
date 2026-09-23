@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-15T12:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Качество прошло проверку, расхождений по порогу нет. Новый NWP‑запуск есть, публикуем обновление; измеренное отклонение ветра 0.31 м/с, дельта по мощности 0.11.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-01-21T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Прогноз прошёл проверку входных данных.",
+  "planner": "scripted",
+  "model_id": null,
+  "fallback_reason": null
+}

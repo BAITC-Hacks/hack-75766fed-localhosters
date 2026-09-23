@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "initial_issue",
+  "used_runs": [
+    "2025-12-31T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": false,
+  "summary_ru": "Прогноз прошёл проверку входных данных.",
+  "planner": "scripted",
+  "model_id": null,
+  "fallback_reason": null
+}

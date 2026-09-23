@@ -3,6 +3,7 @@ import csv
 import importlib
 import json
 import math
+import shutil
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
@@ -57,6 +58,7 @@ def read_archive_run(path, run):
             "temperature_2m_c": hourly["temperature_2m"][i],
             "wind_speed_80m_ms": hourly.get("wind_speed_80m", [None] * len(hourly["time"]))[i],
             "wind_speed_10m_ms": hourly.get("wind_speed_10m", [None] * len(hourly["time"]))[i],
+            "wind_gusts_10m_ms": hourly.get("wind_gusts_10m", [None] * len(hourly["time"]))[i],
             "surface_pressure_hpa": hourly.get("surface_pressure", [None] * len(hourly["time"]))[i],
         } for i, time in enumerate(hourly["time"]) if hourly["wind_speed_100m"][i] is not None],
     })
@@ -171,12 +173,15 @@ def save_forecast(path, forecasts, inputs, settings):
     return {"rows": sum(len(f.hourly) for f in forecasts), "file": path.name}
 
 
-def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_adapter=None):
+def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_adapter=None, run_id=None, stable=False):
+    """run_id: fixed directory name (replay/backtest); stable: omit wall-clock timings so reruns give identical files."""
     at = utc(at)
     settings = settings or Settings.from_env()
     planner = planner or ScriptedPlanner()
     output.mkdir(parents=True, exist_ok=True)
-    directory = output / (at.strftime("%Y-%m-%dT%H-%MZ") + "-" + uuid4().hex[:8])
+    directory = output / (run_id or at.strftime("%Y-%m-%dT%H-%MZ") + "-" + uuid4().hex[:8])
+    if run_id and directory.exists():
+        shutil.rmtree(directory)
     directory.mkdir()
     trace = Trace()
     try:
@@ -219,11 +224,21 @@ def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_
         comparison = trace.call("compare_with_previous", {}, lambda: compare_with_previous(previous, forecasts, weather))
         context = {**comparison, "quality": quality.model_dump(), "nwp_run_init_utc": iso(nwp.run_init_utc),
                    "threshold_ms": settings.divergence_threshold_ms, "reissue_on_new_run": settings.reissue_on_new_run}
-        decision = planner.decide(context)
-        if decision.used_runs != [iso(nwp.run_init_utc)] or decision.corrections:
-            raise ValueError("UNSUPPORTED_DECISION: invented source or unapplied correction")
-        trace.rows[-1].update(decision=decision.reason, rationale=decision.summary_ru, tokens=getattr(planner, "usage", {"input": 0, "output": 0}))
-        write_json(directory / "decision.json", decision.model_dump())
+        fallback_reason = None
+        try:
+            decision = planner.decide(context)
+            if decision.used_runs != [iso(nwp.run_init_utc)] or decision.corrections:
+                raise ValueError("UNSUPPORTED_DECISION: invented source or unapplied correction")
+        except Exception as error:
+            if planner.mode == "scripted":
+                raise
+            # An LLM outage or an unverifiable LLM answer must not stop the replay: decide by the scripted rules.
+            fallback_reason = f"{type(error).__name__}: {error}"[:300]
+            decision = ScriptedPlanner().decide(context)
+        planner_meta = {"planner": planner.mode, "model_id": getattr(planner, "model", None), "fallback_reason": fallback_reason}
+        trace.rows[-1].update(decision=decision.reason, rationale=decision.summary_ru,
+                              tokens=getattr(planner, "usage", {"input": 0, "output": 0}), **planner_meta)
+        write_json(directory / "decision.json", {**decision.model_dump(), **planner_meta})
         write_json(directory / "comparison.json", comparison)
         trace.call("save_forecast", {"publish": decision.publish},
                    lambda: save_forecast(directory / "forecast.csv", forecasts, inputs, settings)
@@ -249,4 +264,4 @@ def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_
         write_json(directory / "status.json", {"status": "failed", "error": str(error)})
         raise
     finally:
-        trace.write(directory / "trace.jsonl")
+        trace.write(directory / "trace.jsonl", timings=not stable)

@@ -1,0 +1,22 @@
+{
+  "key": "f3e26a852f02dc5be14e8f5c430c8b3fe74194706cc8e7d533807c79196e0eee",
+  "url": "https://previous-runs-api.open-meteo.com/v1/forecast",
+  "params": {
+    "latitude": 43.64515,
+    "longitude": 78.535604,
+    "models": "gfs_global",
+    "hourly": "wind_speed_100m_previous_day1,wind_speed_100m_previous_day2,wind_speed_80m_previous_day1,wind_speed_80m_previous_day2,wind_speed_10m_previous_day1,wind_speed_10m_previous_day2,wind_direction_100m_previous_day1,wind_direction_100m_previous_day2,temperature_2m_previous_day1,temperature_2m_previous_day2,surface_pressure_previous_day1,surface_pressure_previous_day2,wind_gusts_10m_previous_day1,wind_gusts_10m_previous_day2",
+    "start_date": "2025-04-25",
+    "end_date": "2025-05-08",
+    "timezone": "UTC",
+    "wind_speed_unit": "ms"
+  },
+  "fetched_at": "2026-09-23T10:53:29.574629+00:00",
+  "sha256": "ccb1f0def9a993eaf9e0f8f8ec7e27dfa6c50a9fae0c0127e6762dc757ccaeb7",
+  "grid": {
+    "latitude": 43.638138,
+    "longitude": 78.515625,
+    "elevation": 555.0
+  },
+  "path": "data/nwp_cache/previous_runs/T1/gfs_global/2025-04-25_2025-05-08.json"
+}

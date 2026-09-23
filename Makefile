@@ -1,4 +1,4 @@
-.PHONY: setup verify demo dashboard dashboard-build docker data train backtest backtest-v0 backtest-dev
+.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train backtest backtest-v0 backtest-dev
 
 setup:
 	uv sync --frozen
@@ -10,6 +10,10 @@ verify:
 demo:
 	uv run --frozen python -m windagent issue --at 2026-01-31T18:00Z --llm scripted --demo
 	uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted --demo
+
+# Тот же replay февраля, но решения принимает LLM (нужен OPENAI_API_KEY в .env); ~2.5 мин, ~$0.1.
+llm-replay:
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen --env-file .env python -m scripts.llm_replay --window test
 
 dashboard: dashboard/node_modules/.package-lock.json
 	uv run --frozen python -m scripts.export_dashboard
@@ -31,9 +35,12 @@ backtest-v0:
 backtest-dev:
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window dev --llm scripted
 
-# Owned by LOC-8/10/17; fail explicitly until those adapters land.
-data train:
-	@echo "$@ adapter pending: LOC-8 (data), LOC-10 (train), LOC-17 (backtest). See docs/research/decisions.md."
+train:
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent.model.v1
+
+# LOC-8 adapter remains separate from the LOC-10 training command.
+data:
+	@echo "data adapter pending; the committed hourly SCADA parquet is used by train"
 	@exit 2
 
 backtest: backtest-v0

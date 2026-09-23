@@ -8,7 +8,7 @@
     index.json      окна, выпуски, метрики окна (v0 vs бейзлайны), параметры модели
     dev.json        31 выпуск × 48 ч: ветер NWP, P10/P50/P90 T1/T2, факт SCADA, бейзлайны
     test.json       29 выпусков × 48 ч: то же без фактов (февраль скрыт организаторами)
-    agent.json      трейсы агента: dayahead 18:00 UTC каждого дня + re-issue 20:00 UTC (12Z) в test
+    agent.json      прогоны агента из runs/backtest (правила) и runs/llm (LLM): трейс, решение, сравнение
     forecast_test_hourly_v0.csv   сабмит за февраль для скачивания со страницы
 """
 
@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import json
 import shutil
-import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -24,17 +23,16 @@ import numpy as np
 import pandas as pd
 
 from windagent import clock
-from windagent.agent.runtime import run_issue
 from windagent.backtest import TEST_LAST_TARGET_SCADA, WINDOWS, attach_actuals, load_runs, run_window
 from windagent.model.v0 import load_params
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "dashboard/public/data"
-RAW_CACHE = ROOT / "data/nwp_cache/single_runs/ecmwf_ifs"
+BACKTEST_RUNS = ROOT / "runs/backtest"
+LLM_RUNS = ROOT / "runs/llm"
 SCADA_PARQUET = ROOT / "data/processed/scada_hourly.parquet"
 METRICS_CSV = ROOT / "reports/backtest_v0_dev.csv"
 SUBMISSION_HOURLY = ROOT / "submission/forecast_test_hourly_v0.csv"
-ADAPTER = "windagent.model.v0:predict_power"
 RATED_MW = 2.5
 COLUMNS = ["t", "lead", "nlead", "ws", "t1_p10", "t1_p50", "t1_p90", "t2_p10", "t2_p50", "t2_p90",
            "t1_act", "t2_act", "t1_flag", "t2_flag", "t1_med7", "t2_med7", "t1_last", "t2_last"]
@@ -147,7 +145,12 @@ def read_run(path: Path) -> dict:
             points["t1" if tb == "turbine_1" else "t2"] = [r(v) for v in g.sort_values("lead_h").point]
     for row in trace:
         row.pop("ms", None)
-        row.pop("tokens", None)
+        tokens = row.pop("tokens", None) or {}
+        if tokens.get("input") or tokens.get("output"):  # только у шагов, где решал LLM
+            row["tokens"] = {k: tokens[k] for k in ("input", "output") if k in tokens}
+        for key in ("planner", "model_id", "fallback_reason"):
+            if row.get(key) is None:
+                row.pop(key, None)
     if comparison:
         for k in ("mean_abs_delta", "divergence_ms"):
             comparison[k] = r(comparison.get(k))
@@ -163,21 +166,26 @@ def read_run(path: Path) -> dict:
     })
 
 
-def build_agent(test: dict, dev: dict) -> dict:
-    """Прогон агента: dayahead 18:00 UTC для каждого выпуска, в test ещё re-issue 20:00 UTC на 12Z."""
-    plan = [(pd.Timestamp(i["issue_utc"]).to_pydatetime(), "dayahead", "dev") for i in dev["issues"]]
-    for i in test["issues"]:
-        at = pd.Timestamp(i["issue_utc"]).to_pydatetime()
-        plan += [(at, "dayahead", "test"), (at + timedelta(hours=2), "reissue", "test")]
-    plan.sort(key=lambda x: x[0])
-    runs = {"dev": {}, "test": {}}
-    with tempfile.TemporaryDirectory(prefix="windagent-dashboard-") as tmp:
-        root = Path(tmp)
-        for at, kind, window in plan:
-            path = run_issue(at, RAW_CACHE, root, model_adapter=ADAPTER)
-            day = clock.to_scada(at if kind == "dayahead" else at - timedelta(hours=2)).strftime("%Y-%m-%d")
-            runs[window].setdefault(day, {})[kind] = read_run(path)
-    return runs
+def collect_runs(root: Path) -> dict:
+    """Папки прогонов агента <время выпуска>-<dayahead|reissue> -> {день SCADA: {вид: прогон}}."""
+    out = {}
+    for path in sorted(root.glob("*-*")):
+        stamp, kind = path.name.rsplit("-", 1)
+        at = datetime.strptime(stamp, "%Y-%m-%dT%H%MZ").replace(tzinfo=timezone.utc)
+        day = clock.to_scada(at if kind == "dayahead" else at - timedelta(hours=2)).strftime("%Y-%m-%d")
+        out.setdefault(day, {})[kind] = read_run(path)
+    return out
+
+
+def build_agent() -> dict:
+    """Закоммиченные прогоны агента: make backtest (правила) и make llm-replay (LLM) — без повторных вызовов."""
+    for window in ("dev", "test"):
+        if not (BACKTEST_RUNS / window).exists():
+            raise SystemExit(f"нет {BACKTEST_RUNS / window}: сначала make backtest-v0 / make backtest-dev")
+    agent = {window: collect_runs(BACKTEST_RUNS / window) for window in ("dev", "test")}
+    if (LLM_RUNS / "test").exists():
+        agent["llm_test"] = collect_runs(LLM_RUNS / "test")
+    return agent
 
 
 def main() -> None:
@@ -189,7 +197,7 @@ def main() -> None:
     dump(OUT / "dev.json", dev)
     dump(OUT / "test.json", test)
 
-    agent = build_agent(test, dev)
+    agent = build_agent()
     dump(OUT / "agent.json", agent)
 
     metrics = pd.read_csv(METRICS_CSV) if METRICS_CSV.exists() else pd.DataFrame()
