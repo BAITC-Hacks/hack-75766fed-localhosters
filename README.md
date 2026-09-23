@@ -30,3 +30,16 @@ docs/research/    план ресёрча и его результаты
 Клиент Open-Meteo, 116 запусков ECMWF IFS за 31.01–28.02.2026, переносимый
 JSON-кеш и Parquet готовы к локальной работе. Установка, запуск, схема и
 ограничения данных: [docs/03_WEATHER_ARCHIVE.md](docs/03_WEATHER_ARCHIVE.md).
+
+## Previous Runs для пяти моделей (LOC-15)
+
+Почасовые признаки `previous_day1/day2` за доступную историю каждой модели,
+исходные JSON и Parquet находятся в `data/nwp_cache/previous_runs/`.
+Повторная сборка без сети:
+
+```sh
+OPEN_METEO_CACHE_ONLY=1 .venv/bin/python -m windagent.dump_previous_runs
+.venv/bin/python research/skill_benchmark.py --turbine T1
+```
+
+Схема данных, покрытие, пропуски и skill: [docs/research/nwp-sources.md](docs/research/nwp-sources.md).
