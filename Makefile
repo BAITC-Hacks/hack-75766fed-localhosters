@@ -11,13 +11,16 @@ demo:
 	uv run --frozen python -m windagent issue --at 2026-01-31T18:00Z --llm scripted --demo
 	uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted --demo
 
-dashboard:
-	uv run --frozen python scripts/export_dashboard.py
+dashboard: dashboard/node_modules/.package-lock.json
+	uv run --frozen python -m scripts.export_dashboard
 	cd dashboard && npm run dev -- --host 127.0.0.1
 
-dashboard-build:
-	uv run --frozen python scripts/export_dashboard.py
+dashboard-build: dashboard/node_modules/.package-lock.json
+	uv run --frozen python -m scripts.export_dashboard
 	cd dashboard && npm run build
+
+dashboard/node_modules/.package-lock.json: dashboard/package-lock.json
+	cd dashboard && npm ci --ignore-scripts
 
 docker:
 	docker build -t windagent .

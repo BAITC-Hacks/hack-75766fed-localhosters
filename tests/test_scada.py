@@ -57,3 +57,4 @@ def test_timezone_proof_artifact_meets_acceptance_bounds() -> None:
         r6 = float(group.loc[np.isclose(group["lag_h"], 6), "r"].iloc[0])
         assert 5.8 <= peak_lag <= 6.2
         assert r6 > r5
+

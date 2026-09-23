@@ -15,7 +15,7 @@
 
 ## Технологии
 
-Python 3.12, uv, pandas/pyarrow, Pydantic AI, Open-Meteo Single Runs. Числовая v0-модель — MOS к ветру + эмпирическая логистическая кривая мощности; LightGBM v1 готовит Akylbek (LOC-10/12). Архив 116 ранов и HTTP-клиент Ramazan описаны в [документе погоды](docs/03_WEATHER_ARCHIVE.md).
+Python 3.12, uv, pandas/pyarrow, Pydantic AI, Open-Meteo Single Runs. Числовая v0-модель — MOS к ветру + эмпирическая логистическая кривая мощности; LightGBM v1 готовит Akylbek (LOC-10/12). Архив 116 февральских ранов, 31 dev-ран и HTTP-клиент Ramazan описаны в [документе погоды](docs/03_WEATHER_ARCHIVE.md) и [бэктесте](docs/research/backtest-v0.md).
 
 ## Установка
 
