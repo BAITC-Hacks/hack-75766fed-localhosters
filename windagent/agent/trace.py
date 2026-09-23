@@ -24,5 +24,6 @@ class Trace:
             "tokens": {"input": 0, "output": 0},
         })
 
-    def write(self, path):
-        path.write_text("".join(json.dumps(row, ensure_ascii=False, default=str) + "\n" for row in self.rows))
+    def write(self, path, timings=True):
+        rows = self.rows if timings else [{k: v for k, v in row.items() if k != "ms"} for row in self.rows]
+        path.write_text("".join(json.dumps(row, ensure_ascii=False, default=str) + "\n" for row in rows))

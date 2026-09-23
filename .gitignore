@@ -18,3 +18,4 @@ dashboard/node_modules/
 dashboard/dist/
 runs/*
 !runs/examples/
+!runs/backtest/

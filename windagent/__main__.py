@@ -21,12 +21,16 @@ def main():
     issue.add_argument("--model-adapter", help="module:function implementing the LOC-12 contract")
     backtest = commands.add_parser("backtest")
     backtest.add_argument("--window", choices=["test", "dev"], default="test")
-    backtest.add_argument("--llm", choices=["scripted"], default="scripted")
+    backtest.add_argument("--llm", choices=["scripted", "openai"], default="scripted")
     args = parser.parse_args()
     try:
         if args.command == "backtest":
             from windagent.backtest import run_and_write
-            paths = run_and_write(args.window)
+            planner = None
+            if args.llm == "openai":
+                from windagent.agent.planner import OpenAIPlanner
+                planner = OpenAIPlanner()
+            paths = run_and_write(args.window, planner=planner)
             print(*paths)
             return 0
         planner = None
