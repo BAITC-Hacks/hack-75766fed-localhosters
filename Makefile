@@ -1,4 +1,4 @@
-.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train backtest backtest-v1 backtest-v0 backtest-dev
+.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train backtest backtest-v1 backtest-v0 backtest-dev backtest-feb2025
 
 setup:
 	uv sync --frozen
@@ -39,6 +39,11 @@ backtest-v0:
 backtest-dev:
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window dev --model v1 --llm scripted
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window dev --model v0 --llm scripted
+
+# Репетиция того же сезона на Feb 2025 (факты есть; holdout-модель v1, как и dev).
+backtest-feb2025:
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window feb2025 --model v1 --llm scripted
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window feb2025 --model v0 --llm scripted
 
 train:
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent.model.v1
