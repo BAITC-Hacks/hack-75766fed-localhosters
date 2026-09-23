@@ -1,122 +1,306 @@
-# Localhosters — HackAlem AI
+# WindAgent — прогноз выработки ВЭС «Нурлы» · Localhosters, HackAlem AI
 
-## Назначение
+Агент каждый день в 18:00 UTC выпускает почасовой прогноз мощности двух турбин на 48 часов в виде P10 / P50 / P90. Когда выходит новый ран погоды, агент пересчитывает прогноз и объясняет, что изменилось. Каждый шаг выпуска пишется в трейс, поэтому любой выпуск можно разобрать постфактум.
 
-Почасовой прогноз нормализованной мощности двух турбин на горизонте 48 часов. Система воспроизводит ежедневные выпуски с погодой, которая была опубликована на момент решения. [Условие кейса](task%20context/HackAlemAIAgenticAI.html), [план задач](docs/research/README.md).
+В репозитории — replay февраля 2026: 29 выпусков и 29 пересчётов. Каждый использует только те прогнозы погоды, которые были опубликованы к моменту выпуска.
+
+| Что нужно | Команда |
+|---|---|
+| "поставить зависимости" | `make setup` |
+| "проверить, что всё работает" | `make verify` |
+| "собрать сабмит февраля 2026" | `make backtest` |
+| "посчитать метрики на январе 2026" | `make backtest-dev` |
+| "посчитать метрики на феврале 2025" | `make backtest-feb2025` |
+| "запустить один выпуск агентом" | `uv run --frozen python -m windagent issue --at 2026-02-10T18:00Z --model-adapter windagent.model.v1:predict_power` |
+| "прогнать февраль с решениями LLM" | `make llm-replay` |
+| "открыть дашборд локально" | `make dashboard` |
+| "проверить в Docker" | `make docker-verify` |
+| "запустить юнит-тесты" | `make test` |
+| "переобучить LightGBM v1" | `make train` |
+
+**Основной сабмит:** [`submission/forecast_test_hourly_v1.csv`](submission/forecast_test_hourly_v1.csv) — 672 часа × 2 турбины = 1 344 строки.
+**Дашборд:** https://windagent-localhosters.pages.dev — логин `localhosters`, пароль `wind-c02371-be3da7`.
+
+---
+
+## Описание решения и назначение
+
+Задача кейса: почасовой прогноз выработки двух турбин на 24–48 часов. Весь цикл выполняет агент: погода → подготовка данных → модель → прогноз → анализ → пересчёт при обновлении входных данных. [Условие кейса](task%20context/HackAlemAIAgenticAI.html).
+
+| Вопрос | Ответ |
+|---|---|
+| Что прогнозируем | нормализованную мощность 0–1 (доля от 2.5 МВт) каждой турбины и МВт по станции, по часам |
+| Когда выпуск | 18:00 UTC накануне = 00:00 дня D по часам SCADA (UTC+6); горизонт 48 ч |
+| Когда пересчёт | когда появляется новый ран погоды: в 20:00 UTC становится доступен ECMWF 12Z |
+| Откуда погода | Open-Meteo Single Runs, ECMWF IFS 9 км — архив прогнозов в том виде, в каком они вышли |
+| Что получает диспетчер | P10 / P50 / P90 на 48 ч, решение publish / reissue с причиной, `report.md` на русском |
+| Как проверить отсутствие утечки | у каждой строки есть `nwp_run_init_utc`; ран, опубликованный позже момента выпуска, отклоняется |
+
+Кому полезно: диспетчеру ВЭС для заявки на сутки вперёд и для решения, нужно ли обновлять заявку, когда пришла свежая погода.
+
+---
 
 ## Архитектура
 
-`Clock → архив погоды → проверка данных → модель → решение планировщика → CSV + trace`. В [архитектуре](docs/architecture.md) есть схема, границы LLM и кода, таблица решений и триггеры пересчёта. В офлайн-режиме работает `ScriptedPlanner`; режим OpenAI (`--llm openai`, ключ `OPENAI_API_KEY`, модель `gpt-5.4-mini`) принимает те же решения через LLM. `make llm-replay` прогоняет весь февраль с LLM: 58 из 58 решений совпали с правилами, 0 откатов, $0.095 за месяц — [отчёт](reports/llm_replay_test.md).
+```text
+┌─ офлайн: make train ─────────────────────────┐
+│ SCADA 2 турбин: 10 мин → 1 ч, UTC+6          │
+│ + архив прогнозов ECMWF IFS и Previous Runs  │
+│ v0: MOS ветра + логистическая кривая         │
+│ v1: LightGBM, p50 = 0.4·LightGBM + 0.6·v0    │
+└───────────────────────┬──────────────────────┘
+                        │ models/
+                        ▼
+┌─ каждый выпуск: run_issue(at) ───────────────┐
+│ Clock: какой ран уже опубликован к at        │ ◄── Open-Meteo Single Runs
+│ Проверка: 48 ч погоды без пропусков          │     ECMWF IFS 9 км, as-issued
+│ Модель: P10 / P50 / P90, 48 ч × 2 турбины    │     data/nwp_cache/single_runs/
+│ Сравнение с прошлым выпуском                 │
+│ Планировщик: правила или OpenAI              │
+│   → publish / reissue + объяснение           │
+└───────────────────────┬──────────────────────┘
+                        │ trace.jsonl · decision.json · report.md
+                        ▼
+       submission/forecast_test_*_v1.csv  ──►  дашборд
+```
 
-## Как гарантируем отсутствие утечки
+Модель считает мощность, LLM её не считает. Агент выбирает ран погоды по правилу as-of, проверяет входные данные, вызывает модель, сравнивает результат с прошлым выпуском и решает, публиковать ли выпуск и нужен ли пересчёт.
 
-Каждый сохранённый ран имеет `run_init_utc`. Для ECMWF IFS применяем лаги по циклам: 00Z +8 ч, 06Z +7 ч, 12Z +8 ч, 18Z +7 ч. Выпуск 31 января 19:00 UTC ещё не может читать 12Z ран; 20:00 — может. Модель видит прогнозы из as-issued Single Runs. Схема интервалов и ограничения источников: [as-of-convention](docs/research/as-of-convention.md). SCADA размечена фиксированным UTC+6.
-Доказательство таймзоны: [tz_xcorr.png](docs/figures/tz_xcorr.png), обработка через `Etc/GMT-6` и [scripts/tz_check.py](scripts/tz_check.py).
+| Шаг `run_issue` | Что делает | Где видно |
+|---|---|---|
+| `read_memory` | берёт прошлый выпуск для сравнения, только из прошлого | `trace.jsonl` |
+| `get_clock` | фиксирует момент выпуска и задержки публикации ранов | `trace.jsonl` |
+| `fetch_nwp_forecast` | берёт самый свежий ран, доступный к моменту выпуска | `inputs.json` |
+| `fetch_scada_history` | фиксирует границу as-of для SCADA | `trace.jsonl` |
+| `check_data_quality` | проверяет 48 ч погоды без пропусков | `dq_report.json` |
+| `prepare_features` | вырезает окно горизонта из рана | `inputs.json` |
+| `predict_power` | вызывает модель через общий контракт адаптера → P10 / P50 / P90 | `forecast.csv` |
+| `compare_with_previous` + планировщик | новый ран? сдвиг ветра? → publish / reissue / reject + объяснение | `comparison.json`, `decision.json` |
+| `save_forecast` | сохраняет прогноз, если решено публиковать | `forecast.csv` |
+| `write_report` | пишет отчёт для диспетчера | `report.md` |
+| `write_memory` | сохраняет заметку для следующего выпуска | `memory.json` |
 
-## Метрика, которую надо побить (LOC-9)
+**Правило as-of.** Ран ECMWF IFS доступен через 8 / 7 / 8 / 7 ч после старта циклов 00Z / 06Z / 12Z / 18Z (`windagent/clock.py`). В 18:00 UTC последний доступный ран — 06Z; 12Z становится доступен в 20:00 UTC, и агент делает пересчёт. Historical Forecast и ERA5 используются только для обучения: это не прогнозы в том виде, в каком они вышли.
 
-Честный case-compliant бейзлайн Previous Runs `ws100` → refit-кривая даёт **MAE 0.20–0.22** по нормализованной мощности (h1–24) и около **0.22** на h25–48. Цель модели — MAE ≤0.19 (skill ≥10%), приемлемый результат — ≤0.22. ERA5 и будущий SCADA-ветер в эти бейзлайны не входят: это недоступные на issue-time потолки. Воспроизводимые таблицы: [docs/research/baselines.md](docs/research/baselines.md), полный CSV: [reports/baselines.csv](reports/baselines.csv).
+**Два режима планировщика.** Режим `scripted` — детерминированные правила без сети и ключа, на нём построен сабмит. Режим `openai` — Pydantic AI + `gpt-5.4-mini` принимает то же решение и пишет объяснение. Код проверяет ответ LLM: ссылка на другой ран, коррекция, которой не было, или противоречие проверке качества → выпуск принимается по правилам, причина пишется в `fallback_reason`. На всём феврале LLM совпал с правилами в 58 решениях из 58, 0 откатов, $0.098 за месяц — [отчёт](reports/llm_replay_test.md).
 
-## LightGBM v1 (LOC-10)
+**Модели.** v0 — линейный MOS ветра на 100 м и эмпирическая логистическая кривая мощности. v1 — LightGBM на признаках Single Runs и Previous Runs, P50 = 0.4 · LightGBM + 0.6 · v0. P10 / P90 — эмпирические квантили остатков v0 по корзинам мощности. На окнах с фактами (январь 2026, февраль 2025) работает holdout-модель `models/lightgbm_v1_holdout.txt`, которая этих месяцев не видела; для февраля 2026 — финальная `models/lightgbm_v1.txt`.
 
-`make train` офлайн собирает lead-aligned признаки из явных ECMWF IFS Single
-Runs и leak-safe Previous Runs, обучает pooled-модель T1/T2 и сравнивает её с
-v0 на Feb 2025 и Jan 2026. Результаты, срезы h1–24 / h25–48 и feature
-importance: [docs/research/lightgbm-v1.md](docs/research/lightgbm-v1.md).
+Подробнее: [архитектура и ADR](docs/architecture.md), [правило as-of](docs/research/as-of-convention.md), [допущения](docs/assumptions.md), [LightGBM v1](docs/research/lightgbm-v1.md).
 
-## Технологии
+---
 
-Python 3.12, uv, pandas/pyarrow, LightGBM, Pydantic AI, Open-Meteo Single Runs. Числовая v0-модель — MOS к ветру + эмпирическая логистическая кривая мощности; LightGBM v1 использует те же as-issued выпуски и вторичные Previous Runs. Архив 116 февральских ранов, 31 dev-ран и HTTP-клиент Ramazan описаны в [документе погоды](docs/03_WEATHER_ARCHIVE.md) и [бэктесте](docs/research/backtest-v0.md).
+## Используемые технологии
+
+| Слой | Технология | Зачем |
+|---|---|---|
+| Окружение | Python 3.12, uv, `uv.lock` | одна команда ставит зафиксированные версии |
+| Данные | pandas, pyarrow (Parquet) | SCADA 10 мин → 1 ч, архив прогнозов |
+| Погода | Open-Meteo Single Runs и Previous Runs (ECMWF IFS), requests + requests-cache | прогнозы с `run_init_utc`, офлайн-кеш в репозитории |
+| Модель | LightGBM 4.7, линейный MOS + логистическая кривая (v0) | P10 / P50 / P90 на 48 ч |
+| Агент | собственный runtime `run_issue`, контракты на Pydantic | 11 шагов, трейс, память, решения |
+| LLM | Pydantic AI + OpenAI `gpt-5.4-mini` | решение publish / reissue и объяснение для диспетчера |
+| Дашборд | Vite 7, React 19, Cloudflare Pages + Basic Auth | прогноз, пересчёт и трейс каждого выпуска |
+| Упаковка и проверки | Make, Docker, pytest | воспроизводимый запуск и проверка |
+
+---
+
+## Необходимые зависимости
+
+| Что | Версия | Зачем | Установка (macOS) |
+|---|---|---|---|
+| git, make | любые | клонирование и команды | `xcode-select --install` |
+| uv | ≥ 0.6 | ставит Python 3.12 и пакеты из `uv.lock` | `brew install uv` |
+| libomp | любая | OpenMP для LightGBM | `brew install libomp` |
+| Node.js | 20.19+ или 22.12+ | только дашборд | `brew install node` |
+| Docker | любой | только проверка в контейнере | Docker Desktop |
+| `OPENAI_API_KEY` | — | только режим LLM | [platform.openai.com](https://platform.openai.com/api-keys) |
+
+**CRITICAL (macOS): без `brew install libomp` `make verify` проходит первую половину и падает на второй с `Library not loaded: @rpath/libomp.dylib`.** v0 работает без libomp, а LightGBM v1 — нет. На Debian/Ubuntu нужна библиотека `libgomp1` (`sudo apt-get install libgomp1`); в Docker-образе она уже стоит.
+
+Python-пакеты и их версии зафиксированы в [`pyproject.toml`](pyproject.toml) и [`uv.lock`](uv.lock): requests, requests-cache, pandas, pyarrow, pydantic, pydantic-ai-slim[openai], python-dotenv, PyYAML, lightgbm; для тестов — pytest, responses, ruff. Версия Python задана в `.python-version`: uv сам скачает 3.12, даже если в системе стоит другая.
+
+Сеть нужна только для установки пакетов. Прогнозы погоды, SCADA и обученные модели лежат в репозитории (`data/` — 24 МБ, `models/`), поэтому бэктест и проверки идут офлайн.
+
+---
 
 ## Установка
 
 ```bash
-make setup
+git clone https://github.com/BAITC-Hacks/hack-75766fed-localhosters.git
+cd hack-75766fed-localhosters
+brew install uv libomp          # macOS; на Linux: uv + libgomp1
+make setup                      # uv sync --frozen: Python 3.12 + пакеты из uv.lock
+cp .env.example .env            # по желанию: ключ OpenAI для режима LLM
 ```
 
-Для Docker: `make docker` при запущенном Docker daemon. Dockerfile использует `ghcr.io/astral-sh/uv:python3.12-bookworm-slim`; контейнер по умолчанию запускает офлайн-проверку.
-
-## Запуск
-
-Офлайн-бэктест по закоммиченному архиву (сабмит v1; `make backtest-v0` — эталон v0):
+Через Docker (Python, uv и libgomp внутри образа):
 
 ```bash
-make backtest-v1
+docker build -t windagent .     # образ с кодом, архивом погоды и моделями
+docker run --rm windagent       # запускает ту же проверку, что make verify
 ```
 
-Каждый из 29 выпусков проходит полный цикл агента (погода → проверка данных → модель → решение → трейс), а в 20:00 UTC, когда публикуется ран 12Z, агент делает пересчёт. Прогоны лежат в [`runs/backtest/test/`](runs/backtest/test) — по папке на выпуск с `trace.jsonl`, `decision.json`, `comparison.json`, `report.md`. Сабмит собирается из прогнозов агента и совпадает с прямым расчётом модели (проверяется в `make verify`). Бэктест создаёт [CSV по выпускам](submission/forecast_test_dayahead_v1.csv), [CSV пересчётов](submission/forecast_test_intraday_v1.csv), [CSV по часам](submission/forecast_test_hourly_v1.csv) и агрегат по станции. Первый содержит 29 × 48 × 2 = 2 784 строки. Второй — 672 часа февраля × 2 турбины = 1 344 строки, с отдельными точками для первых и вторых суток. `p10/p90` — эмпирические квантили остатков v0, подогнанные на обучающем периоде (до LOC-11).
-
-Один issue с погодой из реального архива и моделью v0, затем пересчёт после публикации 12Z:
-
-```bash
-uv run --frozen python -m windagent issue --at 2026-01-31T18:00Z --llm scripted --model-adapter windagent.model.v0:predict_power
-uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted --model-adapter windagent.model.v0:predict_power
-```
-
-Выход каждого запуска: `runs/<timestamp>-<id>/{forecast.csv,inputs.json,dq_report.json,comparison.json,decision.json,trace.jsonl,report.md,memory.json,status.json}`. Результаты разделены по версиям. Синтетический режим запускается отдельно: `make demo`, каждый файл там обозначен `prediction_kind=demo`.
-
-Интерактивный дашборд — все 60 выпусков (январь с фактами, февраль), прогноз с P10–P90, пересчёт 18:00 → 20:00 UTC, трейс агента по шагам:
-
-```bash
-make dashboard        # экспорт данных + http://127.0.0.1:5173
-```
-
-Развёрнутая версия: https://windagent-localhosters.pages.dev (закрыта паролем — в данных SCADA организаторов; логин `localhosters`, пароль у команды).
-
-## Previous Runs для пяти моделей (LOC-15)
-
-Почасовые признаки `previous_day1/day2` за доступную историю каждой модели,
-исходные JSON и Parquet находятся в `data/nwp_cache/previous_runs/`.
-Повторная сборка без сети:
-
-```bash
-OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent.dump_previous_runs
-uv run --frozen python research/skill_benchmark.py --turbine T1
-```
-
-Схема данных, покрытие, пропуски и skill: [docs/research/nwp-sources.md](docs/research/nwp-sources.md).
-
-## Зависимости
-
-Версии зафиксированы в `uv.lock`; Python-пакет и dev-зависимости — в `pyproject.toml`. Для `make backtest-v0` сеть и API-ключ не нужны. Происхождение данных: [research/README.md](research/README.md).
+---
 
 ## Параметры окружения
 
-Шаблон — [.env.example](.env.example). Основные: `ISSUE_HOUR_UTC=18`, `SCADA_TZ_OFFSET_HOURS=6`, `HORIZON_HOURS=48`, `OPEN_METEO_CACHE_ONLY=1`, `LLM_MODE=scripted`, `POINT_ESTIMATE=median`. Консервативные задержки NWP заданы по циклам в `windagent/clock.py`; `AVAIL_LAG_HOURS` пока относится только к будущим не-ECMWF адаптерам. [Допущения](docs/assumptions.md) отмечают вопросы организаторам и план смены дефолтов.
+Шаблон — [`.env.example`](.env.example). Все переменные необязательны: без `.env` работают значения по умолчанию. `.env` читают `python -m windagent` и `make llm-replay`; `make verify` от него не зависит.
+
+| Переменная | По умолчанию | Что задаёт |
+|---|---|---|
+| `OPENAI_API_KEY` | пусто | ключ для `--llm openai` и `make llm-replay`; режиму `scripted` не нужен |
+| `OPENAI_MODEL` | `gpt-5.4-mini` | модель планировщика в режиме `openai` |
+| `LLM_MODE` | `scripted` | планировщик по умолчанию для `windagent issue` |
+| `WINDAGENT_MODEL` | `v1` | модель сабмита для `make backtest` и `make verify` (`v0` — эталон) |
+| `OPEN_METEO_CACHE_ONLY` | `1` | `1` — только закоммиченный кеш погоды, без запросов в сеть |
+| `ISSUE_HOUR_UTC` | `18` | час выпуска, UTC |
+| `HORIZON_HOURS` | `48` | горизонт прогноза, ч |
+| `SCADA_TZ_OFFSET_HOURS` | `6` | часовой пояс SCADA (фиксированный UTC+6) |
+| `REISSUE_ON_NEW_RUN` | `1` | `1` — пересчёт на каждом новом ране; `0` — только при сдвиге ветра больше порога |
+| `DIVERGENCE_THRESHOLD_MS` | `1.5` | порог среднего сдвига ветра на 100 м между ранами, м/с |
+| `POINT_ESTIMATE` | `median` | точечный прогноз = P50 |
+| `AVAIL_LAG_HOURS` | `7` | задержка публикации для будущих не-ECMWF источников; для ECMWF задержки по циклам заданы в `windagent/clock.py` |
+| `RESIDUAL_Z_THRESHOLD`, `RESIDUAL_WINDOW_HOURS`, `DRIFT_WINDOW_DAYS` | `2.5`, `6`, `14` | пороги триггеров по фактам; пока не исполняются (см. «Ограничения») |
+
+---
+
+## Запуск
+
+Сабмит февраля 2026 — 29 выпусков и 29 пересчётов через агента, ~5 секунд:
+
+```bash
+make backtest                   # = make backtest-v1: сабмит на LightGBM v1
+make backtest-v0                # эталон v0 → submission/*_v0.csv, runs/backtest/v0/test/
+```
+
+| Файл | Строк | Что внутри |
+|---|---:|---|
+| [`submission/forecast_test_hourly_v1.csv`](submission/forecast_test_hourly_v1.csv) | 1 344 | основной сабмит: час × турбина, `p50/p10/p90`, `power_mw`; `p50` из выпуска накануне, `p50_h25_48` — из выпуска за двое суток |
+| [`submission/forecast_test_dayahead_v1.csv`](submission/forecast_test_dayahead_v1.csv) | 2 784 | 29 выпусков × 48 ч × 2 турбины, с `nwp_run_init_utc` и `lead_h` |
+| [`submission/forecast_test_intraday_v1.csv`](submission/forecast_test_intraday_v1.csv) | 2 784 | пересчёты в 20:00 UTC на ране 12Z, та же схема |
+| [`submission/forecast_test_hourly_plant_v1.csv`](submission/forecast_test_hourly_plant_v1.csv) | 672 | станция целиком, МВт и МВт·ч по часам |
+| [`runs/backtest/v1/test/`](runs/backtest/v1/test) | 58 папок | по папке на выпуск: `trace.jsonl`, `decision.json`, `comparison.json`, `report.md`, `forecast.csv` |
+
+Один выпуск агентом и пересчёт после выхода рана 12Z:
+
+```bash
+uv run --frozen python -m windagent issue --at 2026-02-10T18:00Z --model-adapter windagent.model.v1:predict_power               # day-ahead на ране 06Z
+uv run --frozen python -m windagent issue --at 2026-02-10T20:00Z --model-adapter windagent.model.v1:predict_power               # пересчёт на ране 12Z
+uv run --frozen python -m windagent issue --at 2026-02-10T18:00Z --model-adapter windagent.model.v1:predict_power --llm openai  # решение принимает LLM
+```
+
+Каждый запуск создаёт папку `runs/<время>-<id>/` с `forecast.csv`, `inputs.json`, `dq_report.json`, `comparison.json`, `decision.json`, `trace.jsonl`, `report.md`, `memory.json`, `status.json`.
+
+**Частые ошибки (команда падает или считает не то):**
+
+| WRONG | RIGHT |
+|---|---|
+| `python -m windagent issue --at 2026-02-10T18:00Z` → `MODEL_NOT_FOUND` | добавить `--model-adapter windagent.model.v1:predict_power` |
+| `uv run pytest` при `OPEN_METEO_CACHE_ONLY=1` в окружении → 5 тестов погоды падают | `make test` (снимает флаг сам) |
+| `python -m windagent ...` системным Python | `uv run --frozen python -m windagent ...` |
+
+Метрики на окнах с фактами, LLM и дашборд:
+
+```bash
+make backtest-dev               # январь 2026 → reports/backtest_{v1,v0}_dev*.csv
+make backtest-feb2025           # февраль 2025, тот же сезон → reports/backtest_{v1,v0}_feb2025*.csv
+make llm-replay                 # февраль 2026 с решениями OpenAI: ~2.5 мин, ~$0.1, нужен OPENAI_API_KEY
+make dashboard                  # экспорт данных + http://127.0.0.1:5173 (нужен Node.js)
+make train                      # переобучить LightGBM v1 → models/lightgbm_v1*.txt
+```
+
+Развёрнутый дашборд: https://windagent-localhosters.pages.dev — логин `localhosters`, пароль `wind-c02371-be3da7`. Сайт закрыт паролем, потому что в нём SCADA организаторов. На дашборде все 60 выпусков (январь с фактами и февраль), P10–P90, пересчёт 18:00 → 20:00 UTC, трейс агента по шагам и решения LLM рядом с правилами. [Сценарий демо](docs/demo-storyboard.md).
+
+---
 
 ## Проверка основного сценария
 
 ```bash
-make verify
+make verify                     # ~6 секунд, без сети и ключей
 ```
 
-Проверка занимает секунды: два выпуска 06Z→12Z, полный trace из 11 шагов, отказ от будущего рана в 19:00, контроль всех 2 784 строк CSV, 1 344 часовых строк и реальный пересчёт на архиве. Ожидаемый финал — две строки `PASS`. Дополнительно `make backtest-dev` считает январские метрики; фактов февраля 2026 в предоставленных файлах нет.
+Ожидаемый вывод заканчивается двумя строками `PASS`:
 
-## Данные и модель
+```text
+PASS: 11 steps, 96 rows, 06Z→12Z revision, no future memory, rejected late/missing/demo inputs, TestModel
+PASS: v1 — 29 issues via agent + 29 reissues (11-step traces); v0 and v1 agent == direct model; 2784 rows, 1344 hourly rows, all as-of, 19Z rejects 12Z, real 06Z→12Z revision
+```
 
-Входные CSV — в `task context/`. SCADA-пакет LOC-8 — `windagent/data/scada.py`. v0 калибрует линейный MOS и эмпирические интервалы на ноябре–декабре 2025, затем применяет модель к архивному прогнозу ветра. Для v1 адаптер `windagent.model.v0:predict_power` заменяется контрактом LOC-12 без изменения схемы issue.
+| Что проверяется | Как |
+|---|---|
+| Агент проходит все 11 шагов | трейс каждого из 58 выпусков содержит 11 строк |
+| Пересчёт работает | 29 папок `*-reissue` на ране 12Z с `reissue_recommended=true` |
+| Сабмит собран агентом, а не в обход | прогноз через `run_issue` совпадает с прямым расчётом модели, v0 и v1 |
+| Нет утечки будущего | каждая из 2 784 строк проходит `assert_as_of`; в 19:00 UTC ран 12Z отклоняется |
+| Плохие входы отклоняются | поздний ран, пропущенный час, демо-данные в боевом режиме → ошибка |
+| Контракт LLM | ответ проверяется схемой `IssueDecision` (Pydantic AI `TestModel`, без сети) |
+| Объём сабмита | 2 784 строки по выпускам, 1 344 почасовых |
+
+Проверка перезаписывает `submission/` и `runs/backtest/` теми же байтами: после неё `git status` чистый. Если он не чистый — результат не воспроизвёлся.
+
+Дополнительно:
+
+```bash
+make test                       # 69 юнит-тестов, ~9 секунд, включая tests/test_clock_no_leakage.py
+make docker-verify              # docker build + та же проверка в контейнере
+```
+
+Проверка вручную на одном дне:
+
+1. Откройте `runs/backtest/v1/test/2026-02-10T1800Z-dayahead/decision.json` → `"reason": "initial_issue"`, ран `2026-02-10T06:00:00Z`.
+2. Откройте `runs/backtest/v1/test/2026-02-10T2000Z-reissue/decision.json` → `"reason": "new_nwp_run"`, ран `2026-02-10T12:00:00Z`, `"reissue_recommended": true`.
+3. В `trace.jsonl` той же папки 11 строк, по одной на шаг; в `comparison.json` — насколько сдвинулся прогноз.
+
+---
 
 ## Результаты
 
-Сабмит — LightGBM v1 (бленд с v0) через агента: [CSV по выпускам](submission/forecast_test_dayahead_v1.csv) (2 784 строки), [CSV по часам](submission/forecast_test_hourly_v1.csv) (1 344 строки), [пересчёты 20:00 UTC](submission/forecast_test_intraday_v1.csv). Фактов февраля 2026 в данных нет, поэтому качество меряем as-of на двух окнах с фактами тем же путём агента и holdout-моделью:
+Фактов февраля 2026 в данных нет, поэтому качество измеряем тем же путём через агента на двух окнах с фактами, holdout-моделью:
 
 | Окно | Модель | MAE T1 | MAE T2 | Медиана 7 сут. (T1 / T2) | Покрытие P10–P90 |
 |---|---|---:|---:|---:|---:|
-| Jan 2026 (dev) | **v1** | **0.171** | **0.175** | 0.294 / 0.288 | 0.80 |
-| Jan 2026 (dev) | v0 | 0.174 | 0.177 | | 0.80 |
-| Feb 2025 (тот же сезон) | **v1** | **0.165** | **0.188** | 0.339 / 0.304 | 0.80 |
-| Feb 2025 (тот же сезон) | v0 | 0.172 | 0.192 | | 0.79 |
+| январь 2026 | **v1** | **0.171** | **0.175** | 0.294 / 0.288 | 0.80 |
+| январь 2026 | v0 | 0.174 | 0.177 | | 0.80 |
+| февраль 2025 (тот же сезон) | **v1** | **0.165** | **0.188** | 0.339 / 0.304 | 0.80 |
+| февраль 2025 (тот же сезон) | v0 | 0.172 | 0.192 | | 0.79 |
 
-MAE — по нормализованной мощности на всём горизонте 48 ч; порог ≤0.22 и цель ≤0.19 выполнены. P10/P90 пока эмпирические (квантили остатков v0), квантильные модели — LOC-11. Блоки h1–24 / h25–48, режим `weather_explainable` и skill: [отчёт v1](docs/research/backtest-v1.md), `reports/backtest_v1_{dev,feb2025}*.csv`; v0 — [отчёт v0](docs/research/backtest-v0.md). Воспроизвести: `make backtest-dev`, `make backtest-feb2025`.
+MAE — по нормализованной мощности на всём горизонте 48 ч. Бейзлайн Previous Runs → кривая мощности даёт 0.20–0.22; цель ≤ 0.19 выполнена на обоих окнах. Блоки h1–24 / h25–48, режим без часов простоя и ограничений, skill: [отчёт v1](docs/research/backtest-v1.md), [отчёт v0](docs/research/backtest-v0.md), [бейзлайны](docs/research/baselines.md). Статус доказательств по критериям жюри — [rubric-map](docs/research/rubric-map.md).
 
-## Ограничения и развитие
+---
 
-Бэктест исполняет day-ahead 18:00 UTC и пересчёт 20:00 UTC на каждый февральский день; в январском кеше только раны 06Z, поэтому там пересчётов нет. Эмпирические P10/P90 требуют проверки покрытия; live-цикл с фактическими измерениями ещё не подключён. Дашборд показывает все выпуски и сцену re-issue на каждый февральский день; [сценарий демо](docs/demo-storyboard.md). В [rubric-map](docs/research/rubric-map.md) указан статус доказательств по критериям жюри.
+## Ограничения
 
-## Почему не X
+- Качество на феврале 2026 неизвестно: фактов нет. Оценка — январь 2026 и февраль 2025.
+- В момент выпуска модель не получает SCADA: шаг `fetch_scada_history` фиксирует только границу as-of. Прогноз строится по погоде; SCADA используется для обучения и оценки.
+- P10 / P90 — эмпирические квантили остатков v0, а не квантильная модель.
+- Пересчёты есть только в тестовом окне: в архиве января 2026 и февраля 2025 лежат только раны 06Z.
+- Триггеры по остаткам и дрейфу (`RESIDUAL_*`, `DRIFT_*`) описаны, но не исполняются: им нужны факты в реальном времени.
+- Задержки публикации ранов ECMWF (8 / 7 / 8 / 7 ч) — наша консервативная оценка, не официальная цифра Open-Meteo.
+- В выпуске один источник погоды — ECMWF IFS; другие модели Previous Runs входят только в признаки v1.
+- Дашборд — статический экспорт готовых выпусков, не live-сервис.
 
-`Historical Forecast` и ERA5 не используются для февральского replay: они не являются as-issued прогнозом. Внешний LLM не нужен для численного прогноза и не может менять выбранный ран или неисполненную коррекцию. Подробный ADR — в [архитектуре](docs/architecture.md).
+---
 
-## Attribution
+## Структура репозитория
 
-Погода: [Open-Meteo Single Runs](https://open-meteo.com/en/docs/single-runs-api), ECMWF IFS; запросы, grid, время выгрузки и хеши — в `data/nwp_cache/manifest.json`. Условие и SCADA предоставлены организаторами HackAlem AI.
+```text
+windagent/            агент: clock.py (as-of), agent/{runtime,planner,scripted,trace}.py,
+                      model/{v0,v1,serve,schema}.py, backtest.py
+scripts/              verify, verify_backtest, llm_replay, export_dashboard, flatten_submission
+data/                 архив прогнозов ECMWF, Previous Runs, почасовая SCADA (24 МБ)
+models/               v0_params.json, lightgbm_v1.txt, lightgbm_v1_holdout.txt
+submission/           CSV сабмита (v1 — основной, v0 — эталон)
+runs/backtest/        по папке на выпуск: trace, decision, report
+runs/llm/test/        те же выпуски с решениями LLM
+reports/              метрики и отчёт LLM
+dashboard/            Vite/React, Cloudflare Pages
+docs/                 архитектура, допущения, исследования
+task context/         условие кейса и SCADA организаторов
+```
+
+---
+
+## Данные и атрибуция
+
+Погода: [Open-Meteo Single Runs](https://open-meteo.com/en/docs/single-runs-api) и Previous Runs, модель ECMWF IFS. Запросы, сетка, время выгрузки и хеши — в `data/nwp_cache/manifest.json`, описание архива — в [docs/03_WEATHER_ARCHIVE.md](docs/03_WEATHER_ARCHIVE.md). Условие кейса и SCADA предоставлены организаторами HackAlem AI. Часовой пояс SCADA (UTC+6) проверен кросс-корреляцией с погодой: [tz_xcorr.png](docs/figures/tz_xcorr.png), [scripts/tz_check.py](scripts/tz_check.py).
