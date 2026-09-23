@@ -1,0 +1,44 @@
+{
+ "T1_stuck_ws": {
+  "runs_ge6": 1,
+  "nonfloor": 0,
+  "longest": 20
+ },
+ "T1_stuck_p": {
+  "runs_ge6": 2126,
+  "nonfloor": 668,
+  "longest": 236
+ },
+ "T1_stuck_temp": {
+  "runs_ge6": 4,
+  "nonfloor": 4,
+  "longest": 20
+ },
+ "T1_downtime": {
+  "p_le_001_ws_gt5": 1640,
+  "p_lt01_ws_gt8": 774,
+  "resid_lt_m03": 1261,
+  "frac_resid": 0.00886
+ },
+ "T2_stuck_ws": {
+  "runs_ge6": 0,
+  "nonfloor": 0,
+  "longest": 3
+ },
+ "T2_stuck_p": {
+  "runs_ge6": 2340,
+  "nonfloor": 775,
+  "longest": 281
+ },
+ "T2_stuck_temp": {
+  "runs_ge6": 4,
+  "nonfloor": 4,
+  "longest": 9
+ },
+ "T2_downtime": {
+  "p_le_001_ws_gt5": 1289,
+  "p_lt01_ws_gt8": 506,
+  "resid_lt_m03": 845,
+  "frac_resid": 0.00565
+ }
+}

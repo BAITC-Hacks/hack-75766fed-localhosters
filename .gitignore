@@ -5,3 +5,9 @@ __pycache__/
 .env
 .ipynb_checkpoints/
 *.egg-info/
+
+# сырой per-request кеш Open-Meteo (om_get); курируемые дампы в data/nwp_cache/*_feb2026/ и *.csv коммитятся
+data/nwp_cache/previous_runs/
+data/nwp_cache/single_runs/
+data/nwp_cache/archive/
+data/nwp_cache/historical_forecast/
