@@ -1,0 +1,251 @@
+{
+  "model_version": "lightgbm-v1",
+  "objective": "regression_l1",
+  "prediction_blend": {
+    "lightgbm_weight": 0.4,
+    "v0_weight": 0.6,
+    "v0_model_version": "mos-curve-v0"
+  },
+  "features": [
+    "ws100",
+    "ws80",
+    "ws10",
+    "gust10",
+    "temperature_2m",
+    "surface_pressure",
+    "ws100_sq",
+    "ws100_cube",
+    "ws100_lag1",
+    "ws100_lead1",
+    "ws100_tendency2",
+    "wind_u100",
+    "wind_v100",
+    "wind_dir_sin",
+    "wind_dir_cos",
+    "air_density",
+    "density_normalized_ws100",
+    "shear_100_10",
+    "nwp_lead_h",
+    "hours_since_issue",
+    "run_cycle_sin",
+    "run_cycle_cos",
+    "target_hour_sin",
+    "target_hour_cos",
+    "target_doy_sin",
+    "target_doy_cos",
+    "turbine_code",
+    "prev_icon_global_ws100",
+    "prev_icon_global_age_days",
+    "prev_ecmwf_ifs025_ws100",
+    "prev_ecmwf_ifs025_age_days",
+    "ensemble_ws100_mean",
+    "ensemble_ws100_spread"
+  ],
+  "params": {
+    "objective": "regression_l1",
+    "metric": "l1",
+    "num_iterations": 500,
+    "learning_rate": 0.035,
+    "num_leaves": 31,
+    "max_depth": -1,
+    "min_data_in_leaf": 80,
+    "bagging_fraction": 0.9,
+    "bagging_freq": 1,
+    "feature_fraction": 0.9,
+    "lambda_l1": 0.05,
+    "lambda_l2": 0.5,
+    "seed": 75766,
+    "num_threads": 1,
+    "deterministic": true,
+    "force_col_wise": true,
+    "verbosity": -1
+  },
+  "n_rows": 65856,
+  "n_training_rows_evaluation": 55142,
+  "n_training_rows_final": 60268,
+  "holdouts": [
+    {
+      "name": "feb2025",
+      "issue_start": "2025-01-31",
+      "issue_end": "2025-02-28"
+    },
+    {
+      "name": "jan2026",
+      "issue_start": "2025-12-31",
+      "issue_end": "2026-01-31"
+    }
+  ],
+  "feature_importance": [
+    {
+      "feature": "ensemble_ws100_mean",
+      "gain": 605982.3698430061,
+      "gain_share": 0.5343550266222354
+    },
+    {
+      "feature": "ws100_lead1",
+      "gain": 76768.13220643997,
+      "gain_share": 0.06769411020907931
+    },
+    {
+      "feature": "prev_ecmwf_ifs025_ws100",
+      "gain": 52280.73130273819,
+      "gain_share": 0.046101129269391444
+    },
+    {
+      "feature": "target_doy_cos",
+      "gain": 50041.591836452484,
+      "gain_share": 0.04412665692718787
+    },
+    {
+      "feature": "target_doy_sin",
+      "gain": 48474.43880033493,
+      "gain_share": 0.04274474196726475
+    },
+    {
+      "feature": "surface_pressure",
+      "gain": 38352.1166343689,
+      "gain_share": 0.03381888207488054
+    },
+    {
+      "feature": "density_normalized_ws100",
+      "gain": 31642.03879928589,
+      "gain_share": 0.02790193795465477
+    },
+    {
+      "feature": "prev_icon_global_ws100",
+      "gain": 23927.80521774292,
+      "gain_share": 0.021099529673530237
+    },
+    {
+      "feature": "wind_dir_sin",
+      "gain": 17769.16776227951,
+      "gain_share": 0.01566884547338852
+    },
+    {
+      "feature": "air_density",
+      "gain": 17042.216297626495,
+      "gain_share": 0.01502781994429867
+    },
+    {
+      "feature": "shear_100_10",
+      "gain": 16445.808999061584,
+      "gain_share": 0.014501908211940988
+    },
+    {
+      "feature": "wind_u100",
+      "gain": 16442.113716602325,
+      "gain_share": 0.014498649713253303
+    },
+    {
+      "feature": "temperature_2m",
+      "gain": 16095.289482593536,
+      "gain_share": 0.014192820233684423
+    },
+    {
+      "feature": "gust10",
+      "gain": 14696.577572345734,
+      "gain_share": 0.012959436595426208
+    },
+    {
+      "feature": "ws100",
+      "gain": 14137.871664047241,
+      "gain_share": 0.012466769934876023
+    },
+    {
+      "feature": "target_hour_sin",
+      "gain": 12687.758301258087,
+      "gain_share": 0.011188060515030677
+    },
+    {
+      "feature": "wind_v100",
+      "gain": 11709.983579158783,
+      "gain_share": 0.010325859131526265
+    },
+    {
+      "feature": "target_hour_cos",
+      "gain": 9700.688177108765,
+      "gain_share": 0.008554063199026556
+    },
+    {
+      "feature": "ws10",
+      "gain": 9162.070528030396,
+      "gain_share": 0.008079110357928155
+    },
+    {
+      "feature": "ws100_tendency2",
+      "gain": 9118.597920417786,
+      "gain_share": 0.008040776228827679
+    },
+    {
+      "feature": "turbine_code",
+      "gain": 8898.69083738327,
+      "gain_share": 0.007846862245422897
+    },
+    {
+      "feature": "wind_dir_cos",
+      "gain": 8338.245217323303,
+      "gain_share": 0.007352661507693439
+    },
+    {
+      "feature": "ws100_lag1",
+      "gain": 7786.53910112381,
+      "gain_share": 0.006866167261192825
+    },
+    {
+      "feature": "ensemble_ws100_spread",
+      "gain": 7014.76867389679,
+      "gain_share": 0.006185620387702115
+    },
+    {
+      "feature": "nwp_lead_h",
+      "gain": 3687.478994369507,
+      "gain_share": 0.0032516175952705287
+    },
+    {
+      "feature": "hours_since_issue",
+      "gain": 2916.715009212494,
+      "gain_share": 0.0025719582020199655
+    },
+    {
+      "feature": "run_cycle_cos",
+      "gain": 1710.4007511138916,
+      "gain_share": 0.0015082307413216295
+    },
+    {
+      "feature": "ws80",
+      "gain": 1097.3021903038025,
+      "gain_share": 0.0009676006601715706
+    },
+    {
+      "feature": "ws100_sq",
+      "gain": 116.9734697341919,
+      "gain_share": 0.00010314716177320939
+    },
+    {
+      "feature": "ws100_cube",
+      "gain": 0.0,
+      "gain_share": 0.0
+    },
+    {
+      "feature": "run_cycle_sin",
+      "gain": 0.0,
+      "gain_share": 0.0
+    },
+    {
+      "feature": "prev_icon_global_age_days",
+      "gain": 0.0,
+      "gain_share": 0.0
+    },
+    {
+      "feature": "prev_ecmwf_ifs025_age_days",
+      "gain": 0.0,
+      "gain_share": 0.0
+    }
+  ],
+  "inputs": {
+    "single_runs": "data/nwp/single_runs_ecmwf_ifs_train.parquet",
+    "previous_runs": "data/baselines/previous_runs_ws100.parquet",
+    "scada": "data/processed/scada_hourly.parquet"
+  },
+  "artifact_note": "The saved model is refit on every clean row after honest holdout scoring; the report is produced by a separate model that excludes both holdouts."
+}

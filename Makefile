@@ -35,9 +35,12 @@ backtest-v0:
 backtest-dev:
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window dev --llm scripted
 
-# Owned by LOC-8/10/17; fail explicitly until those adapters land.
-data train:
-	@echo "$@ adapter pending: LOC-8 (data), LOC-10 (train), LOC-17 (backtest). See docs/research/decisions.md."
+train:
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent.model.v1
+
+# LOC-8 adapter remains separate from the LOC-10 training command.
+data:
+	@echo "data adapter pending; the committed hourly SCADA parquet is used by train"
 	@exit 2
 
 backtest: backtest-v0
