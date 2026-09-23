@@ -27,6 +27,15 @@ class InventingPlanner:
                              summary_ru="Ссылается на ран, которого не было на момент выпуска.")
 
 
+class WithholdingPlanner:
+    mode = "openai"
+    model = "stub"
+
+    def decide(self, context):
+        return IssueDecision(publish=False, reason="quality_gate_rejected", used_runs=[context["nwp_run_init_utc"]],
+                             summary_ru="Отклонение ветра выше порога, не публикуем.")
+
+
 def _decision(run_dir):
     return json.loads((run_dir / "decision.json").read_text())
 
@@ -45,3 +54,10 @@ def test_llm_invented_run_is_rejected(tmp_path):
     decision = _decision(run_dir)
     assert decision["used_runs"] == ["2026-01-31T06:00:00Z"]
     assert "UNSUPPORTED_DECISION" in decision["fallback_reason"]
+
+
+def test_llm_cannot_reject_a_passed_quality_gate(tmp_path):
+    run_dir = run_issue(AT, FIXTURES, tmp_path, demo=True, planner=WithholdingPlanner())
+    decision = _decision(run_dir)
+    assert decision["publish"] and decision["reason"] == "initial_issue"
+    assert "contradicts quality gate" in decision["fallback_reason"]

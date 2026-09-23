@@ -1,0 +1,7 @@
+{
+  "previous": "2026-01-07T1800Z-dayahead",
+  "overlap_hours": 48,
+  "mean_abs_delta": 0.1376820977583235,
+  "divergence_ms": 0.05874999999999999,
+  "new_run": true
+}

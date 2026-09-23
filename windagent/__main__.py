@@ -22,6 +22,7 @@ def main():
     backtest = commands.add_parser("backtest")
     backtest.add_argument("--window", choices=["test", "dev"], default="test")
     backtest.add_argument("--llm", choices=["scripted", "openai"], default="scripted")
+    backtest.add_argument("--model", choices=["v0", "v1"], default=None, help="default: v1 (WINDAGENT_MODEL)")
     args = parser.parse_args()
     try:
         if args.command == "backtest":
@@ -30,7 +31,8 @@ def main():
             if args.llm == "openai":
                 from windagent.agent.planner import OpenAIPlanner
                 planner = OpenAIPlanner()
-            paths = run_and_write(args.window, planner=planner)
+            from windagent.backtest import PRIMARY_MODEL
+            paths = run_and_write(args.window, args.model or PRIMARY_MODEL, planner=planner)
             print(*paths)
             return 0
         planner = None

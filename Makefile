@@ -1,4 +1,4 @@
-.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train backtest backtest-v0 backtest-dev
+.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train backtest backtest-v1 backtest-v0 backtest-dev
 
 setup:
 	uv sync --frozen
@@ -29,11 +29,16 @@ dashboard/node_modules/.package-lock.json: dashboard/package-lock.json
 docker:
 	docker build -t windagent .
 
+# Основной сабмит: v1 (LightGBM + v0) через агента; v0 — эталон.
+backtest-v1:
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window test --model v1 --llm scripted
+
 backtest-v0:
-	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window test --llm scripted
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window test --model v0 --llm scripted
 
 backtest-dev:
-	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window dev --llm scripted
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window dev --model v1 --llm scripted
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window dev --model v0 --llm scripted
 
 train:
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent.model.v1
@@ -43,4 +48,4 @@ data:
 	@echo "data adapter pending; the committed hourly SCADA parquet is used by train"
 	@exit 2
 
-backtest: backtest-v0
+backtest: backtest-v1

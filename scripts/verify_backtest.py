@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from windagent.agent.runtime import run_issue
-from windagent.backtest import run_and_write, run_window
+from windagent.backtest import PRIMARY_MODEL, run_and_write, run_window
 from windagent.clock import assert_as_of, latest_available_run
 
 
@@ -22,8 +22,17 @@ def main():
         pass
     else:
         raise AssertionError("12Z was accepted at 19:00 UTC")
-    path, flat_path = run_and_write("test")  # every issue goes through the agent (run_issue)
-    runs_root = Path("runs/backtest/test")
+    # v0 through the agent must reproduce the direct model computation exactly
+    v0_path, _ = run_and_write("test", "v0")
+    reference = run_window("test")
+    with v0_path.open() as file:
+        agent_rows = list(csv.DictReader(file))
+    ref_rows = [{k: str(v) for k, v in row.items()} for row in reference.astype(object).to_dict("records")]
+    assert [(r["issue_time_utc"], r["turbine"], r["lead_h"], float(r["p50"])) for r in agent_rows] == \
+           [(r["issue_time_utc"], r["turbine"], r["lead_h"], float(r["p50"])) for r in ref_rows]
+    # the submission model: every issue goes through the agent (run_issue)
+    path, flat_path = run_and_write("test", PRIMARY_MODEL)
+    runs_root = Path("runs/backtest") / PRIMARY_MODEL / "test"
     dayahead = sorted(runs_root.glob("*-dayahead"))
     reissue = sorted(runs_root.glob("*-reissue"))
     assert len(dayahead) == 29 and len(reissue) == 29, (len(dayahead), len(reissue))
@@ -35,13 +44,6 @@ def main():
         inputs = json.loads((run_dir / "inputs.json").read_text())
         assert inputs["nwp_run_init_utc"].endswith("T12:00:00Z"), run_dir
         assert json.loads((run_dir / "decision.json").read_text())["reissue_recommended"], run_dir
-    # the agent path must reproduce the direct model computation exactly
-    reference = run_window("test")
-    with path.open() as file:
-        agent_rows = list(csv.DictReader(file))
-    ref_rows = [{k: str(v) for k, v in row.items()} for row in reference.astype(object).to_dict("records")]
-    assert [(r["issue_time_utc"], r["turbine"], r["lead_h"], float(r["p50"])) for r in agent_rows] == \
-           [(r["issue_time_utc"], r["turbine"], r["lead_h"], float(r["p50"])) for r in ref_rows]
     with path.open() as file:
         rows = list(csv.DictReader(file))
     with flat_path.open() as file:
@@ -63,7 +65,7 @@ def main():
             revision = list(csv.DictReader(file))
         assert len(revision) == 96 and all(r["nwp_run_init_utc"] == "2026-01-31T12:00:00Z" for r in revision)
         assert first != second
-    print("PASS: 29 issues via agent + 29 reissues (11-step traces), submission == direct model, "
+    print(f"PASS: {PRIMARY_MODEL} — 29 issues via agent + 29 reissues (11-step traces); v0 agent == direct model; "
           "2784 rows, 1344 hourly rows, all as-of, 19Z rejects 12Z, real 06Z→12Z revision")
 
 

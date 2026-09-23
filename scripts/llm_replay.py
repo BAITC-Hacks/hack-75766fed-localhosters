@@ -3,7 +3,7 @@
     OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m scripts.llm_replay --window test
 
 Прогоны пишутся в runs/llm/<window>/ (сабмит не трогаем). Каждое решение LLM сравнивается с решением
-детерминированных правил из runs/backtest/<window>/ — отчёт в reports/llm_replay_<window>.csv и .md:
+детерминированных правил из runs/backtest/<модель>/<window>/ — отчёт в reports/llm_replay_<window>.csv и .md:
 совпадение решений, откаты на правила (fallback), токены.
 """
 
@@ -17,7 +17,7 @@ from pathlib import Path
 import pandas as pd
 
 from windagent.agent.planner import OpenAIPlanner
-from windagent.backtest import AGENT_RUNS, ROOT, run_window_agent
+from windagent.backtest import AGENT_RUNS, PRIMARY_MODEL, ROOT, run_window_agent
 
 LLM_RUNS = ROOT / "runs/llm"
 REPORTS = ROOT / "reports"
@@ -43,8 +43,8 @@ def main() -> None:
     if not args.report_only:
         if not os.getenv("OPENAI_API_KEY"):
             raise SystemExit("OPENAI_API_KEY не задан (.env)")
-        _, _, root = run_window_agent(args.window, planner=OpenAIPlanner(), out_root=LLM_RUNS)
-    scripted_root = AGENT_RUNS / args.window
+        _, _, root = run_window_agent(args.window, PRIMARY_MODEL, planner=OpenAIPlanner(), out_root=LLM_RUNS)
+    scripted_root = AGENT_RUNS / PRIMARY_MODEL / args.window
     rows = []
     for run_dir in sorted(root.iterdir()):
         llm = decision(run_dir)
