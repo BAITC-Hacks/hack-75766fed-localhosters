@@ -1,4 +1,4 @@
-.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train backtest backtest-v1 backtest-v0 backtest-dev backtest-feb2025
+.PHONY: setup verify test demo llm-replay dashboard dashboard-build docker docker-verify data train backtest backtest-v1 backtest-v0 backtest-dev backtest-feb2025
 
 setup:
 	uv sync --frozen
@@ -6,6 +6,10 @@ setup:
 verify:
 	LLM_MODE=scripted OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m scripts.verify
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m scripts.verify_backtest
+
+# Юнит-тесты; test_weather мокает HTTP, поэтому флаг офлайн-кеша снимаем.
+test:
+	env -u OPEN_METEO_CACHE_ONLY uv run --frozen --extra dev python -m pytest -q
 
 demo:
 	uv run --frozen python -m windagent issue --at 2026-01-31T18:00Z --llm scripted --demo
@@ -28,6 +32,9 @@ dashboard/node_modules/.package-lock.json: dashboard/package-lock.json
 
 docker:
 	docker build -t windagent .
+
+docker-verify: docker
+	docker run --rm windagent
 
 # Основной сабмит: v1 (LightGBM + v0) через агента; v0 — эталон.
 backtest-v1:
