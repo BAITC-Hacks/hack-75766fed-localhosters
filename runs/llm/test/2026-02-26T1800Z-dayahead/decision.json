@@ -5,8 +5,8 @@
     "2026-02-26T06:00:00Z"
   ],
   "corrections": [],
-  "reissue_recommended": true,
-  "summary_ru": "Новый NWP‑запуск 2026-02-26T06:00Z принят к публикации. Расхождение по ветру 1.07 м/с ниже порога 1.5 м/с, при предыдущем выпуске это сопровождается изменением мощности на 0.178.",
+  "reissue_recommended": false,
+  "summary_ru": "Готово к публикации новой версии прогноза. Порог качества пройден; divergence 1.066 м/с при threshold 1.5 м/с, mean_abs_delta 0.173.",
   "planner": "openai",
   "model_id": "gpt-5.4-mini",
   "fallback_reason": null

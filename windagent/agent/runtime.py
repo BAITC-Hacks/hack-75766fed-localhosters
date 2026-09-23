@@ -229,6 +229,9 @@ def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_
             decision = planner.decide(context)
             if decision.used_runs != [iso(nwp.run_init_utc)] or decision.corrections:
                 raise ValueError("UNSUPPORTED_DECISION: invented source or unapplied correction")
+            # The quality gate is a measured fact, not an LLM opinion: the decision must agree with it.
+            if (decision.reason == "quality_gate_rejected") == quality.accepted or (decision.publish and not quality.accepted):
+                raise ValueError(f"UNSUPPORTED_DECISION: '{decision.reason}' contradicts quality gate accepted={quality.accepted}")
         except Exception as error:
             if planner.mode == "scripted":
                 raise

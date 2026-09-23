@@ -49,14 +49,18 @@ def predict_series(ws_nwp, params: dict | None = None) -> pd.DataFrame:
     params = params or load_params()
     ws_site = params["mos_a"] * np.asarray(ws_nwp, dtype=float) + params["mos_b"]
     p = np.clip(curve(ws_site), P_MIN, P_MAX)
-    bin_idx = np.clip(np.digitize(p, BINS) - 1, 0, len(BINS) - 2)
-    q10 = np.array(params["resid_q10"])[bin_idx]
-    q90 = np.array(params["resid_q90"])[bin_idx]
-    p10 = np.clip(p + q10, 0.0, 1.0)
-    p90 = np.clip(p + q90, 0.0, 1.0)
-    p10 = np.minimum(p10, p)
-    p90 = np.maximum(p90, p)
+    p10, p90 = interval_around(p, params)
     return pd.DataFrame({"p50": p, "p10": p10, "p90": p90})
+
+
+def interval_around(p, params: dict | None = None) -> tuple[np.ndarray, np.ndarray]:
+    """P10/P90 вокруг точечного прогноза p: эмпирические квантили остатков по бинам мощности (fit v0)."""
+    params = params or load_params()
+    p = np.asarray(p, dtype=float)
+    bin_idx = np.clip(np.digitize(p, BINS) - 1, 0, len(BINS) - 2)
+    p10 = np.clip(p + np.array(params["resid_q10"])[bin_idx], 0.0, 1.0)
+    p90 = np.clip(p + np.array(params["resid_q90"])[bin_idx], 0.0, 1.0)
+    return np.minimum(p10, p), np.maximum(p90, p)
 
 
 def predict_power(request: dict) -> dict:

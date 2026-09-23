@@ -74,7 +74,7 @@ def nwp_frame(request: dict) -> pd.DataFrame:
 
 
 def predict_power(request: dict) -> dict:
-    booster, meta = load_model()
+    booster, meta = load_model(v1.model_path_for(request["forecast_origin_utc"]))
     prev = pd.DataFrame(request["previous_runs"]) if request.get("previous_runs") else previous_runs_archive()
     features = build_features(nwp_frame(request), request["forecast_origin_utc"], request["turbine_id"],
                               prev, horizon_h=request["horizon_hours"])

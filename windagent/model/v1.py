@@ -34,6 +34,9 @@ SINGLE_RUNS_PATH: Final = ROOT / "data/nwp/single_runs_ecmwf_ifs_train.parquet"
 PREVIOUS_RUNS_PATH: Final = ROOT / "data/baselines/previous_runs_ws100.parquet"
 SCADA_PATH: Final = ROOT / "data/processed/scada_hourly.parquet"
 MODEL_PATH: Final = ROOT / "models/lightgbm_v1.txt"
+# Same features and params, fitted without the two holdout windows: serves issues inside them, so replays of
+# Feb 2025 / Jan 2026 stay out-of-sample (the final model above is refit on every clean row, Jan 2026 included).
+HOLDOUT_MODEL_PATH: Final = ROOT / "models/lightgbm_v1_holdout.txt"
 METADATA_PATH: Final = ROOT / "models/lightgbm_v1.metadata.json"
 REPORT_PATH: Final = ROOT / "reports/lightgbm_v1.csv"
 DOC_PATH: Final = ROOT / "docs/research/lightgbm-v1.md"
@@ -549,6 +552,7 @@ def run(
     """Train/evaluate the honest spike, then fit and persist the final model."""
     frame = build_dataset()
     evaluation_model = fit_model(frame, exclude_holdouts=True)
+    evaluation_model.save_model(HOLDOUT_MODEL_PATH)
     report = evaluate(evaluation_model, frame)
 
     final_model = fit_model(frame, exclude_holdouts=False)
@@ -617,6 +621,15 @@ def main() -> None:
             ]
         ].to_string(index=False)
     )
+
+
+def model_path_for(issue_time) -> Path:
+    """Issues inside a holdout window use the holdout-free model; everything else the final model."""
+    issue_day = pd.Timestamp(issue_time).tz_convert("UTC").tz_localize(None).normalize()
+    for holdout in HOLDOUTS:
+        if pd.Timestamp(holdout.issue_start) <= issue_day <= pd.Timestamp(holdout.issue_end):
+            return HOLDOUT_MODEL_PATH
+    return MODEL_PATH
 
 
 def predict_power(request: dict) -> dict:

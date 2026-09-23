@@ -23,16 +23,18 @@ import numpy as np
 import pandas as pd
 
 from windagent import clock
-from windagent.backtest import TEST_LAST_TARGET_SCADA, WINDOWS, attach_actuals, load_runs, run_window
+from windagent.backtest import PRIMARY_MODEL, TEST_LAST_TARGET_SCADA, WINDOWS, attach_actuals, load_runs
 from windagent.model.v0 import load_params
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "dashboard/public/data"
-BACKTEST_RUNS = ROOT / "runs/backtest"
+MODEL = PRIMARY_MODEL
+BACKTEST_RUNS = ROOT / "runs/backtest" / MODEL
 LLM_RUNS = ROOT / "runs/llm"
 SCADA_PARQUET = ROOT / "data/processed/scada_hourly.parquet"
-METRICS_CSV = ROOT / "reports/backtest_v0_dev.csv"
-SUBMISSION_HOURLY = ROOT / "submission/forecast_test_hourly_v0.csv"
+SUBMISSIONS = ROOT / "submission"
+METRICS_CSVS = [ROOT / f"reports/backtest_{MODEL}_dev.csv", ROOT / "reports/backtest_v0_dev.csv"]
+SUBMISSION_HOURLY = SUBMISSIONS / f"forecast_test_hourly_{MODEL}.csv"
 RATED_MW = 2.5
 COLUMNS = ["t", "lead", "nlead", "ws", "t1_p10", "t1_p50", "t1_p90", "t2_p10", "t2_p50", "t2_p90",
            "t1_act", "t2_act", "t1_flag", "t2_flag", "t1_med7", "t2_med7", "t1_last", "t2_last"]
@@ -72,7 +74,11 @@ def mae(a, b):
 
 
 def build_window(window: str, runs: dict, flags: dict) -> dict:
-    df = run_window(window)
+    """Прогноз окна — из сабмита основной модели (его собирает агент в make backtest)."""
+    path = SUBMISSIONS / f"forecast_{window}_dayahead_{MODEL}.csv"
+    if not path.exists():
+        raise SystemExit(f"нет {path.relative_to(ROOT)}: сначала make backtest / make backtest-dev")
+    df = pd.read_csv(path)
     if window == "dev":
         df = attach_actuals(df)
     wide = {}
@@ -181,7 +187,7 @@ def build_agent() -> dict:
     """Закоммиченные прогоны агента: make backtest (правила) и make llm-replay (LLM) — без повторных вызовов."""
     for window in ("dev", "test"):
         if not (BACKTEST_RUNS / window).exists():
-            raise SystemExit(f"нет {BACKTEST_RUNS / window}: сначала make backtest-v0 / make backtest-dev")
+            raise SystemExit(f"нет {BACKTEST_RUNS / window}: сначала make backtest / make backtest-dev")
     agent = {window: collect_runs(BACKTEST_RUNS / window) for window in ("dev", "test")}
     if (LLM_RUNS / "test").exists():
         agent["llm_test"] = collect_runs(LLM_RUNS / "test")
@@ -200,12 +206,16 @@ def main() -> None:
     agent = build_agent()
     dump(OUT / "agent.json", agent)
 
-    metrics = pd.read_csv(METRICS_CSV) if METRICS_CSV.exists() else pd.DataFrame()
+    frames = [pd.read_csv(p) for p in METRICS_CSVS if p.exists()]
+    metrics = pd.concat(frames, ignore_index=True).drop_duplicates(["model", "turbine", "block"]) if frames else pd.DataFrame()
     params = load_params()
+    v1_meta = json.loads((ROOT / "models/lightgbm_v1.metadata.json").read_text()) if MODEL == "v1" else None
     index = {
         "site": {"name": "ВЭС «Нурлы»", "turbines": ["T1", "T2"], "rated_mw": RATED_MW, "scada_tz": "UTC+6"},
-        "model": {"version": params["model_version"], "mos_a": r(params["mos_a"]), "mos_b": r(params["mos_b"]),
-                  "fit_window_utc": params["fit_window_utc"], "curve": {"k": params["curve_k"], "x0": params["curve_x0"]}},
+        "model": {"key": MODEL, "version": v1_meta["model_version"] if v1_meta else params["model_version"],
+                  "blend": v1_meta["prediction_blend"] if v1_meta else None,
+                  "anchor": {"version": params["model_version"], "mos_a": r(params["mos_a"]), "mos_b": r(params["mos_b"]),
+                             "fit_window_utc": params["fit_window_utc"]}},
         "availability_lag_h": clock.AVAIL_LAG_H,
         "windows": {
             "dev": {"label": "Январь 2026", "caption": "проверка на фактах SCADA", "issues": len(dev["issues"]),
@@ -217,11 +227,13 @@ def main() -> None:
             {k: (r(v) if isinstance(v, float) else v) for k, v in row.items()}
             for row in metrics.to_dict("records")
         ],
-        "downloads": {"test_hourly_csv": "forecast_test_hourly_v0.csv"},
+        "downloads": {"test_hourly_csv": SUBMISSION_HOURLY.name},
     }
     dump(OUT / "index.json", index)
     if SUBMISSION_HOURLY.exists():
-        shutil.copyfile(SUBMISSION_HOURLY, OUT / "forecast_test_hourly_v0.csv")
+        for stale in OUT.glob("forecast_test_hourly_*.csv"):
+            stale.unlink()
+        shutil.copyfile(SUBMISSION_HOURLY, OUT / SUBMISSION_HOURLY.name)
     old = OUT / "dashboard.json"
     if old.exists():
         old.unlink()

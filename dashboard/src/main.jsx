@@ -311,8 +311,11 @@ function App() {
     const ms = index.data?.metrics || [];
     const tb = plant ? 'T1' : turbine.toUpperCase();
     const get = (model, block) => ms.find(m => m.model === model && m.turbine === tb && m.block === block)?.mae;
-    return { tb, rows: [['v0', 'Модель v0 (MOS + кривая)'], ['median_7d', 'Медиана за 7 дней'], ['last_value', 'Последнее значение']]
-      .map(([k, name]) => ({ k, name, h1: get(k, 'h1_24'), h2: get(k, 'h25_48'), all: get(k, 'all') })) };
+    const primary = index.data?.model?.key || 'v0';
+    const names = { v1: 'Модель v1 (LightGBM + v0)', v0: 'Модель v0 (MOS + кривая)', median_7d: 'Медиана за 7 дней', last_value: 'Последнее значение' };
+    const keys = [primary, ...(primary === 'v0' ? [] : ['v0']), 'median_7d', 'last_value'];
+    return { tb, primary, rows: keys.map(k => ({ k, name: names[k] || k, h1: get(k, 'h1_24'), h2: get(k, 'h25_48'), all: get(k, 'all') }))
+      .filter(r => r.all != null) };
   }, [index.data, turbine, plant]);
 
   // сцена пересчёта
@@ -461,7 +464,7 @@ function App() {
           <p>Все 31 январский выпуск, те же правила доступности прогнозов, что и в феврале. MAE в долях от 2.5 МВт, ниже — лучше.</p>
           <div className="table-scroll"><table>
             <thead><tr><th>Модель</th><th className="num">Сутки 1</th><th className="num">Сутки 2</th><th className="num">48 часов</th></tr></thead>
-            <tbody>{windowMetrics.rows.map(r => <tr key={r.k} className={r.k === 'v0' ? 'strong' : ''}>
+            <tbody>{windowMetrics.rows.map(r => <tr key={r.k} className={r.k === windowMetrics.primary ? 'strong' : ''}>
               <td>{r.name}</td><td className="num tabular">{num(r.h1)}</td><td className="num tabular">{num(r.h2)}</td><td className="num tabular">{num(r.all)}</td></tr>)}</tbody>
           </table></div>
         </section>
@@ -476,7 +479,7 @@ function App() {
           </table></div>
         </details>
       </div>}
-      <footer>SCADA организаторов · Open-Meteo Single Runs (ECMWF IFS 9 км, CC BY 4.0) · Время выпусков UTC, оси — часы SCADA UTC+6 · Модель {index.data?.model.version}</footer>
+      <footer>SCADA организаторов · Open-Meteo Single Runs (ECMWF IFS 9 км, CC BY 4.0) · Время выпусков UTC, оси — часы SCADA UTC+6 · Модель {index.data?.model.version}{index.data?.model.blend ? ` (${Math.round(100 * index.data.model.blend.lightgbm_weight)}% LightGBM + ${Math.round(100 * index.data.model.blend.v0_weight)}% v0)` : ''}</footer>
     </main>
   </div>;
 }
