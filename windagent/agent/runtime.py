@@ -55,6 +55,9 @@ def read_archive_run(path, run):
             "wind_speed_100m_ms": hourly["wind_speed_100m"][i],
             "wind_direction_100m_deg": hourly["wind_direction_100m"][i],
             "temperature_2m_c": hourly["temperature_2m"][i],
+            "wind_speed_80m_ms": hourly.get("wind_speed_80m", [None] * len(hourly["time"]))[i],
+            "wind_speed_10m_ms": hourly.get("wind_speed_10m", [None] * len(hourly["time"]))[i],
+            "surface_pressure_hpa": hourly.get("surface_pressure", [None] * len(hourly["time"]))[i],
         } for i, time in enumerate(hourly["time"]) if hourly["wind_speed_100m"][i] is not None],
     })
 
