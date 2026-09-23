@@ -11,6 +11,7 @@
 ## Как гарантируем отсутствие утечки
 
 Каждый сохранённый ран имеет `run_init_utc`. Для ECMWF IFS применяем лаги по циклам: 00Z +8 ч, 06Z +7 ч, 12Z +8 ч, 18Z +7 ч. Выпуск 31 января 19:00 UTC ещё не может читать 12Z ран; 20:00 — может. Модель видит прогнозы из as-issued Single Runs. Схема интервалов и ограничения источников: [as-of-convention](docs/research/as-of-convention.md). SCADA размечена фиксированным UTC+6.
+Доказательство таймзоны: [tz_xcorr.png](docs/figures/tz_xcorr.png), обработка через `Etc/GMT-6` и [scripts/tz_check.py](scripts/tz_check.py).
 
 ## Технологии
 
