@@ -2,6 +2,7 @@
 
     python -m windagent backtest --window test   # 29 выпусков 31.01..28.02.2026 через агента -> submission/, runs/backtest/test/
     python -m windagent backtest --window dev    # 31 выпуск за январь 2026, есть факты -> reports/ (MAE), runs/backtest/dev/
+    python -m windagent backtest --window feb2025  # 29 выпусков 31.01..28.02.2025 — репетиция того же сезона, факты есть
 
 Каждый выпуск проходит полный цикл агента (run_issue: погода → проверка → модель → решение → трейс);
 сабмит собирается из его прогнозов. run_window() — прямой расчёт той же модели, эталон для регрессии.
@@ -24,18 +25,23 @@ import numpy as np
 import pandas as pd
 
 from windagent import clock
-from windagent.eval.metrics import by_lead_block, mae, skill
+from windagent.eval.metrics import by_lead_block, evaluate_forecast, mae, skill
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNS_PARQUETS = [
     ROOT / "data/nwp/single_runs_ecmwf_ifs_feb2026.parquet",
     ROOT / "data/nwp/single_runs_ecmwf_ifs_jan2026.parquet",
+    ROOT / "data/nwp/single_runs_ecmwf_ifs_train.parquet",  # 2024-03..2026-01, нужен окну feb2025
 ]
 WINDOWS = {
     # первый и последний ЦЕЛЕВОЙ день (по SCADA); выпуск — 18:00 UTC накануне
     "test": (date(2026, 2, 1), date(2026, 3, 1)),   # 29 выпусков: 31.01 .. 28.02 (последний покрывает 1-2 марта)
     "dev": (date(2026, 1, 1), date(2026, 1, 31)),   # 31 выпуск: 31.12 .. 30.01, факты есть
+    # те же выпуски, что holdout feb2025 в windagent.model.v1 (31.01..28.02.2025); в кеше только 06Z -> без reissue
+    "feb2025": (date(2025, 2, 1), date(2025, 3, 1)),
 }
+EVAL_WINDOWS = ("dev", "feb2025")  # окна с фактами SCADA
+SCADA_HOURLY = ROOT / "data/processed/scada_hourly.parquet"
 TEST_LAST_TARGET_SCADA = pd.Timestamp("2026-02-28T23:00", tz="+06:00")
 TURBINES = ("T1", "T2")
 SUBMISSION_COLS = ["issue_time_utc", "issue_time_scada", "target_time_scada", "target_time_utc", "turbine",
@@ -200,6 +206,25 @@ def attach_actuals(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat(out).sort_values(["issue_time_utc", "turbine", "lead_h"]).reset_index(drop=True)
 
 
+def evaluate_modes(d: pd.DataFrame, model: str) -> pd.DataFrame:
+    """metrics.evaluate_forecast в обоих режимах (all / weather_explainable) по флагам SCADA LOC-8:
+    MAE/RMSE/bias, skill к median_7d, pinball и покрытие P10–P90, блоки h1–24 / h25–48."""
+    flags = pd.read_parquet(SCADA_HOURLY, columns=["ts", "turbine_id", "is_clean", "range", "frozen", "outage",
+                                                   "curve_resid", "curtail", "icing", "t1_outage"])
+    flags = flags.rename(columns={"turbine_id": "turbine"})
+    flags["ts"] = pd.to_datetime(flags["ts"], utc=True)
+    e = d.assign(ts=pd.to_datetime(d["target_time_utc"], utc=True), lead_h=d["lead_h"] + 1)
+    e = e.merge(flags, on=["ts", "turbine"], how="left")
+    tables = []
+    for turbine, g in [("both", e), *e.groupby("turbine")]:
+        for mode in ("all", "weather_explainable"):
+            t = evaluate_forecast(g, reference_col="bl_median_7d", mode=mode, include_per_lead=False)
+            t.insert(0, "turbine", turbine)
+            t.insert(0, "model", model)
+            tables.append(t)
+    return pd.concat(tables, ignore_index=True)
+
+
 def evaluate(df: pd.DataFrame, model: str = "v0") -> pd.DataFrame:
     d = attach_actuals(df)
     tables = []
@@ -244,13 +269,18 @@ def run_and_write(window: str, model: str = PRIMARY_MODEL, out: Path = ROOT / "s
     plant.to_csv(out / f"forecast_{window}_hourly_plant_{model}.csv", index=False)
     print(f"{hourly_path}: {len(hourly)} rows, {len(plant)} hours")
 
-    if window == "dev":
+    if window in EVAL_WINDOWS:
         res = evaluate(df, model)
         reports.mkdir(parents=True, exist_ok=True)
         rep = reports / f"backtest_{model}_{window}.csv"
         res.to_csv(rep, index=False)
         print(res.to_string(index=False))
-        print(f"-> {rep}")
+        modes = evaluate_modes(attach_actuals(df), model)
+        modes_path = reports / f"backtest_{model}_{window}_modes.csv"
+        modes.round(4).to_csv(modes_path, index=False)
+        print(modes[modes.scope == "all"][["turbine", "mode", "n", "nmae", "nrmse", "skill_pct",
+                                           "pinball_mean", "coverage_p10_p90"]].round(4).to_string(index=False))
+        print(f"-> {rep}, {modes_path}")
     return per_issue, hourly_path
 
 

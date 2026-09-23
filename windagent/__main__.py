@@ -20,7 +20,7 @@ def main():
     issue.add_argument("--output", type=Path, default=Path("runs"))
     issue.add_argument("--model-adapter", help="module:function implementing the LOC-12 contract")
     backtest = commands.add_parser("backtest")
-    backtest.add_argument("--window", choices=["test", "dev"], default="test")
+    backtest.add_argument("--window", choices=["test", "dev", "feb2025"], default="test")
     backtest.add_argument("--llm", choices=["scripted", "openai"], default="scripted")
     backtest.add_argument("--model", choices=["v0", "v1"], default=None, help="default: v1 (WINDAGENT_MODEL)")
     args = parser.parse_args()

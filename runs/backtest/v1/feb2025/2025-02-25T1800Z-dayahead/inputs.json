@@ -1,0 +1,496 @@
+{
+  "schema_version": "1.0",
+  "issue_time_utc": "2025-02-25T18:00:00Z",
+  "nwp_run_init_utc": "2025-02-25T06:00:00Z",
+  "nwp_available_at_utc": "2025-02-25T13:00:00Z",
+  "data_kind": "archive",
+  "weather_source": "Open-Meteo Single Runs",
+  "weather_model": "ecmwf_ifs",
+  "cache_sha256": "d16e081dd522e894f2a8614e35e071fd1addd02e2b46dbf711cda7f7a0135bfa",
+  "planner": "scripted",
+  "interval_label": "start",
+  "point_estimate": "median",
+  "scada_status": "missing",
+  "hourly": [
+    {
+      "valid_time_utc": "2025-02-25T18:00:00Z",
+      "wind_speed_100m_ms": 5.17,
+      "wind_direction_100m_deg": 244.0,
+      "temperature_2m_c": 1.8,
+      "wind_speed_80m_ms": 5.03,
+      "wind_speed_10m_ms": 2.2,
+      "wind_gusts_10m_ms": 3.9,
+      "surface_pressure_hpa": 943.6
+    },
+    {
+      "valid_time_utc": "2025-02-25T19:00:00Z",
+      "wind_speed_100m_ms": 4.26,
+      "wind_direction_100m_deg": 236.0,
+      "temperature_2m_c": 1.7,
+      "wind_speed_80m_ms": 4.15,
+      "wind_speed_10m_ms": 1.84,
+      "wind_gusts_10m_ms": 3.3,
+      "surface_pressure_hpa": 943.2
+    },
+    {
+      "valid_time_utc": "2025-02-25T20:00:00Z",
+      "wind_speed_100m_ms": 4.27,
+      "wind_direction_100m_deg": 256.0,
+      "temperature_2m_c": 1.7,
+      "wind_speed_80m_ms": 4.16,
+      "wind_speed_10m_ms": 1.9,
+      "wind_gusts_10m_ms": 2.6,
+      "surface_pressure_hpa": 942.9
+    },
+    {
+      "valid_time_utc": "2025-02-25T21:00:00Z",
+      "wind_speed_100m_ms": 5.03,
+      "wind_direction_100m_deg": 260.0,
+      "temperature_2m_c": 0.5,
+      "wind_speed_80m_ms": 4.9,
+      "wind_speed_10m_ms": 2.01,
+      "wind_gusts_10m_ms": 2.7,
+      "surface_pressure_hpa": 943.0
+    },
+    {
+      "valid_time_utc": "2025-02-25T22:00:00Z",
+      "wind_speed_100m_ms": 5.28,
+      "wind_direction_100m_deg": 255.0,
+      "temperature_2m_c": 0.1,
+      "wind_speed_80m_ms": 5.14,
+      "wind_speed_10m_ms": 2.13,
+      "wind_gusts_10m_ms": 3.0,
+      "surface_pressure_hpa": 943.4
+    },
+    {
+      "valid_time_utc": "2025-02-25T23:00:00Z",
+      "wind_speed_100m_ms": 4.9,
+      "wind_direction_100m_deg": 238.0,
+      "temperature_2m_c": 0.7,
+      "wind_speed_80m_ms": 4.77,
+      "wind_speed_10m_ms": 1.98,
+      "wind_gusts_10m_ms": 3.3,
+      "surface_pressure_hpa": 943.9
+    },
+    {
+      "valid_time_utc": "2025-02-26T00:00:00Z",
+      "wind_speed_100m_ms": 4.68,
+      "wind_direction_100m_deg": 252.0,
+      "temperature_2m_c": 0.8,
+      "wind_speed_80m_ms": 4.56,
+      "wind_speed_10m_ms": 1.8,
+      "wind_gusts_10m_ms": 2.8,
+      "surface_pressure_hpa": 944.2
+    },
+    {
+      "valid_time_utc": "2025-02-26T01:00:00Z",
+      "wind_speed_100m_ms": 7.05,
+      "wind_direction_100m_deg": 248.0,
+      "temperature_2m_c": 1.2,
+      "wind_speed_80m_ms": 6.87,
+      "wind_speed_10m_ms": 3.16,
+      "wind_gusts_10m_ms": 5.1,
+      "surface_pressure_hpa": 946.1
+    },
+    {
+      "valid_time_utc": "2025-02-26T02:00:00Z",
+      "wind_speed_100m_ms": 8.67,
+      "wind_direction_100m_deg": 253.0,
+      "temperature_2m_c": 2.1,
+      "wind_speed_80m_ms": 8.45,
+      "wind_speed_10m_ms": 4.47,
+      "wind_gusts_10m_ms": 7.2,
+      "surface_pressure_hpa": 947.7
+    },
+    {
+      "valid_time_utc": "2025-02-26T03:00:00Z",
+      "wind_speed_100m_ms": 11.51,
+      "wind_direction_100m_deg": 264.0,
+      "temperature_2m_c": 2.7,
+      "wind_speed_80m_ms": 11.22,
+      "wind_speed_10m_ms": 6.88,
+      "wind_gusts_10m_ms": 11.3,
+      "surface_pressure_hpa": 949.9
+    },
+    {
+      "valid_time_utc": "2025-02-26T04:00:00Z",
+      "wind_speed_100m_ms": 11.55,
+      "wind_direction_100m_deg": 271.0,
+      "temperature_2m_c": 4.4,
+      "wind_speed_80m_ms": 11.26,
+      "wind_speed_10m_ms": 5.85,
+      "wind_gusts_10m_ms": 11.8,
+      "surface_pressure_hpa": 951.7
+    },
+    {
+      "valid_time_utc": "2025-02-26T05:00:00Z",
+      "wind_speed_100m_ms": 11.2,
+      "wind_direction_100m_deg": 281.0,
+      "temperature_2m_c": 5.0,
+      "wind_speed_80m_ms": 10.92,
+      "wind_speed_10m_ms": 7.85,
+      "wind_gusts_10m_ms": 14.0,
+      "surface_pressure_hpa": 952.6
+    },
+    {
+      "valid_time_utc": "2025-02-26T06:00:00Z",
+      "wind_speed_100m_ms": 10.74,
+      "wind_direction_100m_deg": 277.0,
+      "temperature_2m_c": 4.3,
+      "wind_speed_80m_ms": 10.47,
+      "wind_speed_10m_ms": 7.32,
+      "wind_gusts_10m_ms": 14.0,
+      "surface_pressure_hpa": 952.8
+    },
+    {
+      "valid_time_utc": "2025-02-26T07:00:00Z",
+      "wind_speed_100m_ms": 10.87,
+      "wind_direction_100m_deg": 273.0,
+      "temperature_2m_c": 4.0,
+      "wind_speed_80m_ms": 10.59,
+      "wind_speed_10m_ms": 7.45,
+      "wind_gusts_10m_ms": 13.2,
+      "surface_pressure_hpa": 953.4
+    },
+    {
+      "valid_time_utc": "2025-02-26T08:00:00Z",
+      "wind_speed_100m_ms": 12.52,
+      "wind_direction_100m_deg": 279.0,
+      "temperature_2m_c": 2.9,
+      "wind_speed_80m_ms": 12.2,
+      "wind_speed_10m_ms": 7.64,
+      "wind_gusts_10m_ms": 13.7,
+      "surface_pressure_hpa": 954.1
+    },
+    {
+      "valid_time_utc": "2025-02-26T09:00:00Z",
+      "wind_speed_100m_ms": 14.14,
+      "wind_direction_100m_deg": 276.0,
+      "temperature_2m_c": 2.2,
+      "wind_speed_80m_ms": 13.78,
+      "wind_speed_10m_ms": 8.41,
+      "wind_gusts_10m_ms": 14.4,
+      "surface_pressure_hpa": 955.3
+    },
+    {
+      "valid_time_utc": "2025-02-26T10:00:00Z",
+      "wind_speed_100m_ms": 17.8,
+      "wind_direction_100m_deg": 281.0,
+      "temperature_2m_c": 0.8,
+      "wind_speed_80m_ms": 17.35,
+      "wind_speed_10m_ms": 10.0,
+      "wind_gusts_10m_ms": 16.1,
+      "surface_pressure_hpa": 956.9
+    },
+    {
+      "valid_time_utc": "2025-02-26T11:00:00Z",
+      "wind_speed_100m_ms": 17.23,
+      "wind_direction_100m_deg": 285.0,
+      "temperature_2m_c": 0.3,
+      "wind_speed_80m_ms": 16.8,
+      "wind_speed_10m_ms": 9.72,
+      "wind_gusts_10m_ms": 16.1,
+      "surface_pressure_hpa": 958.3
+    },
+    {
+      "valid_time_utc": "2025-02-26T12:00:00Z",
+      "wind_speed_100m_ms": 16.7,
+      "wind_direction_100m_deg": 284.0,
+      "temperature_2m_c": -0.1,
+      "wind_speed_80m_ms": 16.28,
+      "wind_speed_10m_ms": 9.07,
+      "wind_gusts_10m_ms": 15.5,
+      "surface_pressure_hpa": 959.8
+    },
+    {
+      "valid_time_utc": "2025-02-26T13:00:00Z",
+      "wind_speed_100m_ms": 15.33,
+      "wind_direction_100m_deg": 279.0,
+      "temperature_2m_c": -0.2,
+      "wind_speed_80m_ms": 14.94,
+      "wind_speed_10m_ms": 8.4,
+      "wind_gusts_10m_ms": 14.0,
+      "surface_pressure_hpa": 961.1
+    },
+    {
+      "valid_time_utc": "2025-02-26T14:00:00Z",
+      "wind_speed_100m_ms": 13.28,
+      "wind_direction_100m_deg": 281.0,
+      "temperature_2m_c": -0.7,
+      "wind_speed_80m_ms": 12.94,
+      "wind_speed_10m_ms": 8.62,
+      "wind_gusts_10m_ms": 15.9,
+      "surface_pressure_hpa": 962.4
+    },
+    {
+      "valid_time_utc": "2025-02-26T15:00:00Z",
+      "wind_speed_100m_ms": 11.93,
+      "wind_direction_100m_deg": 280.0,
+      "temperature_2m_c": -1.4,
+      "wind_speed_80m_ms": 11.63,
+      "wind_speed_10m_ms": 7.3,
+      "wind_gusts_10m_ms": 14.7,
+      "surface_pressure_hpa": 962.9
+    },
+    {
+      "valid_time_utc": "2025-02-26T16:00:00Z",
+      "wind_speed_100m_ms": 11.15,
+      "wind_direction_100m_deg": 278.0,
+      "temperature_2m_c": -2.0,
+      "wind_speed_80m_ms": 10.87,
+      "wind_speed_10m_ms": 6.81,
+      "wind_gusts_10m_ms": 12.5,
+      "surface_pressure_hpa": 963.0
+    },
+    {
+      "valid_time_utc": "2025-02-26T17:00:00Z",
+      "wind_speed_100m_ms": 10.86,
+      "wind_direction_100m_deg": 268.0,
+      "temperature_2m_c": -2.3,
+      "wind_speed_80m_ms": 10.58,
+      "wind_speed_10m_ms": 6.48,
+      "wind_gusts_10m_ms": 11.8,
+      "surface_pressure_hpa": 963.0
+    },
+    {
+      "valid_time_utc": "2025-02-26T18:00:00Z",
+      "wind_speed_100m_ms": 9.22,
+      "wind_direction_100m_deg": 250.0,
+      "temperature_2m_c": -2.6,
+      "wind_speed_80m_ms": 8.99,
+      "wind_speed_10m_ms": 5.75,
+      "wind_gusts_10m_ms": 11.2,
+      "surface_pressure_hpa": 962.8
+    },
+    {
+      "valid_time_utc": "2025-02-26T19:00:00Z",
+      "wind_speed_100m_ms": 8.82,
+      "wind_direction_100m_deg": 241.0,
+      "temperature_2m_c": -2.9,
+      "wind_speed_80m_ms": 8.6,
+      "wind_speed_10m_ms": 5.47,
+      "wind_gusts_10m_ms": 9.9,
+      "surface_pressure_hpa": 962.3
+    },
+    {
+      "valid_time_utc": "2025-02-26T20:00:00Z",
+      "wind_speed_100m_ms": 8.11,
+      "wind_direction_100m_deg": 240.0,
+      "temperature_2m_c": -3.1,
+      "wind_speed_80m_ms": 7.91,
+      "wind_speed_10m_ms": 4.84,
+      "wind_gusts_10m_ms": 9.3,
+      "surface_pressure_hpa": 961.6
+    },
+    {
+      "valid_time_utc": "2025-02-26T21:00:00Z",
+      "wind_speed_100m_ms": 7.17,
+      "wind_direction_100m_deg": 236.0,
+      "temperature_2m_c": -3.1,
+      "wind_speed_80m_ms": 6.99,
+      "wind_speed_10m_ms": 4.07,
+      "wind_gusts_10m_ms": 8.2,
+      "surface_pressure_hpa": 961.2
+    },
+    {
+      "valid_time_utc": "2025-02-26T22:00:00Z",
+      "wind_speed_100m_ms": 5.81,
+      "wind_direction_100m_deg": 237.0,
+      "temperature_2m_c": -3.4,
+      "wind_speed_80m_ms": 5.66,
+      "wind_speed_10m_ms": 3.01,
+      "wind_gusts_10m_ms": 6.9,
+      "surface_pressure_hpa": 960.6
+    },
+    {
+      "valid_time_utc": "2025-02-26T23:00:00Z",
+      "wind_speed_100m_ms": 4.5,
+      "wind_direction_100m_deg": 229.0,
+      "temperature_2m_c": -3.9,
+      "wind_speed_80m_ms": 4.39,
+      "wind_speed_10m_ms": 1.9,
+      "wind_gusts_10m_ms": 5.1,
+      "surface_pressure_hpa": 960.4
+    },
+    {
+      "valid_time_utc": "2025-02-27T00:00:00Z",
+      "wind_speed_100m_ms": 2.7,
+      "wind_direction_100m_deg": 219.0,
+      "temperature_2m_c": -5.5,
+      "wind_speed_80m_ms": 2.63,
+      "wind_speed_10m_ms": 1.15,
+      "wind_gusts_10m_ms": 3.3,
+      "surface_pressure_hpa": 960.1
+    },
+    {
+      "valid_time_utc": "2025-02-27T01:00:00Z",
+      "wind_speed_100m_ms": 0.1,
+      "wind_direction_100m_deg": 270.0,
+      "temperature_2m_c": -5.8,
+      "wind_speed_80m_ms": 0.1,
+      "wind_speed_10m_ms": 0.18,
+      "wind_gusts_10m_ms": 1.9,
+      "surface_pressure_hpa": 960.0
+    },
+    {
+      "valid_time_utc": "2025-02-27T02:00:00Z",
+      "wind_speed_100m_ms": 1.18,
+      "wind_direction_100m_deg": 12.0,
+      "temperature_2m_c": -5.3,
+      "wind_speed_80m_ms": 1.15,
+      "wind_speed_10m_ms": 0.36,
+      "wind_gusts_10m_ms": 0.7,
+      "surface_pressure_hpa": 960.2
+    },
+    {
+      "valid_time_utc": "2025-02-27T03:00:00Z",
+      "wind_speed_100m_ms": 1.92,
+      "wind_direction_100m_deg": 51.0,
+      "temperature_2m_c": -3.8,
+      "wind_speed_80m_ms": 1.87,
+      "wind_speed_10m_ms": 1.49,
+      "wind_gusts_10m_ms": 2.4,
+      "surface_pressure_hpa": 960.7
+    },
+    {
+      "valid_time_utc": "2025-02-27T04:00:00Z",
+      "wind_speed_100m_ms": 2.76,
+      "wind_direction_100m_deg": 48.0,
+      "temperature_2m_c": -2.3,
+      "wind_speed_80m_ms": 2.69,
+      "wind_speed_10m_ms": 2.09,
+      "wind_gusts_10m_ms": 4.3,
+      "surface_pressure_hpa": 960.5
+    },
+    {
+      "valid_time_utc": "2025-02-27T05:00:00Z",
+      "wind_speed_100m_ms": 2.93,
+      "wind_direction_100m_deg": 46.0,
+      "temperature_2m_c": -1.1,
+      "wind_speed_80m_ms": 2.86,
+      "wind_speed_10m_ms": 2.34,
+      "wind_gusts_10m_ms": 4.9,
+      "surface_pressure_hpa": 959.8
+    },
+    {
+      "valid_time_utc": "2025-02-27T06:00:00Z",
+      "wind_speed_100m_ms": 4.37,
+      "wind_direction_100m_deg": 59.0,
+      "temperature_2m_c": 0.0,
+      "wind_speed_80m_ms": 4.26,
+      "wind_speed_10m_ms": 3.38,
+      "wind_gusts_10m_ms": 6.3,
+      "surface_pressure_hpa": 958.9
+    },
+    {
+      "valid_time_utc": "2025-02-27T07:00:00Z",
+      "wind_speed_100m_ms": 5.17,
+      "wind_direction_100m_deg": 63.0,
+      "temperature_2m_c": 0.8,
+      "wind_speed_80m_ms": 5.03,
+      "wind_speed_10m_ms": 3.83,
+      "wind_gusts_10m_ms": 7.4,
+      "surface_pressure_hpa": 957.9
+    },
+    {
+      "valid_time_utc": "2025-02-27T08:00:00Z",
+      "wind_speed_100m_ms": 4.81,
+      "wind_direction_100m_deg": 61.0,
+      "temperature_2m_c": 1.8,
+      "wind_speed_80m_ms": 4.69,
+      "wind_speed_10m_ms": 3.36,
+      "wind_gusts_10m_ms": 7.3,
+      "surface_pressure_hpa": 956.7
+    },
+    {
+      "valid_time_utc": "2025-02-27T09:00:00Z",
+      "wind_speed_100m_ms": 3.68,
+      "wind_direction_100m_deg": 53.0,
+      "temperature_2m_c": 2.6,
+      "wind_speed_80m_ms": 3.59,
+      "wind_speed_10m_ms": 2.37,
+      "wind_gusts_10m_ms": 6.5,
+      "surface_pressure_hpa": 955.7
+    },
+    {
+      "valid_time_utc": "2025-02-27T10:00:00Z",
+      "wind_speed_100m_ms": 3.02,
+      "wind_direction_100m_deg": 39.0,
+      "temperature_2m_c": 2.5,
+      "wind_speed_80m_ms": 2.95,
+      "wind_speed_10m_ms": 1.79,
+      "wind_gusts_10m_ms": 5.0,
+      "surface_pressure_hpa": 955.1
+    },
+    {
+      "valid_time_utc": "2025-02-27T11:00:00Z",
+      "wind_speed_100m_ms": 2.44,
+      "wind_direction_100m_deg": 31.0,
+      "temperature_2m_c": 1.9,
+      "wind_speed_80m_ms": 2.38,
+      "wind_speed_10m_ms": 1.28,
+      "wind_gusts_10m_ms": 4.0,
+      "surface_pressure_hpa": 954.8
+    },
+    {
+      "valid_time_utc": "2025-02-27T12:00:00Z",
+      "wind_speed_100m_ms": 2.21,
+      "wind_direction_100m_deg": 62.0,
+      "temperature_2m_c": -0.1,
+      "wind_speed_80m_ms": 2.16,
+      "wind_speed_10m_ms": 0.81,
+      "wind_gusts_10m_ms": 2.9,
+      "surface_pressure_hpa": 954.4
+    },
+    {
+      "valid_time_utc": "2025-02-27T13:00:00Z",
+      "wind_speed_100m_ms": 0.67,
+      "wind_direction_100m_deg": 42.0,
+      "temperature_2m_c": -1.0,
+      "wind_speed_80m_ms": 0.66,
+      "wind_speed_10m_ms": 0.07,
+      "wind_gusts_10m_ms": 1.2,
+      "surface_pressure_hpa": 954.5
+    },
+    {
+      "valid_time_utc": "2025-02-27T14:00:00Z",
+      "wind_speed_100m_ms": 3.91,
+      "wind_direction_100m_deg": 274.0,
+      "temperature_2m_c": -2.0,
+      "wind_speed_80m_ms": 3.81,
+      "wind_speed_10m_ms": 1.95,
+      "wind_gusts_10m_ms": 3.1,
+      "surface_pressure_hpa": 954.8
+    },
+    {
+      "valid_time_utc": "2025-02-27T15:00:00Z",
+      "wind_speed_100m_ms": 4.55,
+      "wind_direction_100m_deg": 253.0,
+      "temperature_2m_c": -2.7,
+      "wind_speed_80m_ms": 4.44,
+      "wind_speed_10m_ms": 1.87,
+      "wind_gusts_10m_ms": 3.9,
+      "surface_pressure_hpa": 954.5
+    },
+    {
+      "valid_time_utc": "2025-02-27T16:00:00Z",
+      "wind_speed_100m_ms": 4.35,
+      "wind_direction_100m_deg": 253.0,
+      "temperature_2m_c": -2.7,
+      "wind_speed_80m_ms": 4.24,
+      "wind_speed_10m_ms": 1.8,
+      "wind_gusts_10m_ms": 3.2,
+      "surface_pressure_hpa": 954.2
+    },
+    {
+      "valid_time_utc": "2025-02-27T17:00:00Z",
+      "wind_speed_100m_ms": 4.56,
+      "wind_direction_100m_deg": 255.0,
+      "temperature_2m_c": -2.5,
+      "wind_speed_80m_ms": 4.45,
+      "wind_speed_10m_ms": 1.88,
+      "wind_gusts_10m_ms": 3.4,
+      "surface_pressure_hpa": 954.4
+    }
+  ]
+}
