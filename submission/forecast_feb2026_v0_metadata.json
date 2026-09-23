@@ -1,0 +1,23 @@
+{
+  "model": {
+    "a": 0.988677335194004,
+    "b": 1.4240373196813816,
+    "train_rows": 1462,
+    "train_start": "2025-11-01",
+    "train_end_exclusive": "2026-01-01",
+    "source": "Previous Runs day1 + SCADA T1",
+    "target": "site wind speed m/s"
+  },
+  "issue_rows": 2784,
+  "hourly_rows": 1344,
+  "source": "data/nwp/single_runs_ecmwf_ifs_feb2026.parquet",
+  "interval_label": "start",
+  "availability_lag_hours_by_cycle": {
+    "0": 8,
+    "6": 7,
+    "12": 8,
+    "18": 7
+  },
+  "quality_metrics": "pending independent SCADA evaluation; February 2026 actuals hidden",
+  "quantiles": "not calibrated in v0; p10 and p90 intentionally blank"
+}
