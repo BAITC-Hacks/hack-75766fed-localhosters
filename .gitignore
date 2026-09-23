@@ -5,3 +5,7 @@ __pycache__/
 .env
 .ipynb_checkpoints/
 *.egg-info/
+
+.om_cache*
+.pytest_cache/
+.ruff_cache/
