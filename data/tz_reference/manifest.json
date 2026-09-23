@@ -1,0 +1,19 @@
+{
+  "purpose": "LOC-8 timezone proof only; these analysis references are not as-issued test features",
+  "start_date": "2023-03-10",
+  "end_date": "2026-01-31",
+  "timezone": "UTC",
+  "wind_speed_unit": "m/s",
+  "references": {
+    "IFS 9 km": {
+      "endpoint": "historical-forecast-api.open-meteo.com/v1/forecast",
+      "model": "ecmwf_ifs",
+      "file": "ifs_9km_ws100.parquet"
+    },
+    "ERA5": {
+      "endpoint": "archive-api.open-meteo.com/v1/archive",
+      "model": "era5",
+      "file": "era5_ws100.parquet"
+    }
+  }
+}
