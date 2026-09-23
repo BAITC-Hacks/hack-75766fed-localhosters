@@ -17,9 +17,16 @@
 
 Честный case-compliant бейзлайн Previous Runs `ws100` → refit-кривая даёт **MAE 0.20–0.22** по нормализованной мощности (h1–24) и около **0.22** на h25–48. Цель модели — MAE ≤0.19 (skill ≥10%), приемлемый результат — ≤0.22. ERA5 и будущий SCADA-ветер в эти бейзлайны не входят: это недоступные на issue-time потолки. Воспроизводимые таблицы: [docs/research/baselines.md](docs/research/baselines.md), полный CSV: [reports/baselines.csv](reports/baselines.csv).
 
+## LightGBM v1 (LOC-10)
+
+`make train` офлайн собирает lead-aligned признаки из явных ECMWF IFS Single
+Runs и leak-safe Previous Runs, обучает pooled-модель T1/T2 и сравнивает её с
+v0 на Feb 2025 и Jan 2026. Результаты, срезы h1–24 / h25–48 и feature
+importance: [docs/research/lightgbm-v1.md](docs/research/lightgbm-v1.md).
+
 ## Технологии
 
-Python 3.12, uv, pandas/pyarrow, Pydantic AI, Open-Meteo Single Runs. Числовая v0-модель — MOS к ветру + эмпирическая логистическая кривая мощности; LightGBM v1 готовит Akylbek (LOC-10/12). Архив 116 февральских ранов, 31 dev-ран и HTTP-клиент Ramazan описаны в [документе погоды](docs/03_WEATHER_ARCHIVE.md) и [бэктесте](docs/research/backtest-v0.md).
+Python 3.12, uv, pandas/pyarrow, LightGBM, Pydantic AI, Open-Meteo Single Runs. Числовая v0-модель — MOS к ветру + эмпирическая логистическая кривая мощности; LightGBM v1 использует те же as-issued выпуски и вторичные Previous Runs. Архив 116 февральских ранов, 31 dev-ран и HTTP-клиент Ramazan описаны в [документе погоды](docs/03_WEATHER_ARCHIVE.md) и [бэктесте](docs/research/backtest-v0.md).
 
 ## Установка
 
