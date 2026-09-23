@@ -1,0 +1,14 @@
+{
+  "runs": 147,
+  "model": "ecmwf_ifs",
+  "availability_rule_h": {
+    "0": 8,
+    "6": 7,
+    "12": 8,
+    "18": 7
+  },
+  "sources": [
+    "data/nwp/single_runs_ecmwf_ifs_feb2026.parquet",
+    "data/nwp/single_runs_ecmwf_ifs_jan2026.parquet"
+  ]
+}

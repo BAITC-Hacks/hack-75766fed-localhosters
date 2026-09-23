@@ -33,13 +33,13 @@ make setup
 make backtest-v0
 ```
 
-Он создаёт [CSV по выпускам](submission/forecast_feb2026_dayahead_v0.csv) и [CSV по часам](submission/forecast_feb2026_hourly_v0.csv). Первый содержит 29 × 48 × 2 = 2 784 строки. Второй — 672 часа февраля × 2 турбины = 1 344 строки, с отдельными точками для первых и вторых суток. `p10/p90` в v0 оставлены пустыми: интервальная модель ещё не калибрована.
+Он создаёт [CSV по выпускам](submission/forecast_test_dayahead_v0.csv), [CSV по часам](submission/forecast_test_hourly_v0.csv) и агрегат по станции. Первый содержит 29 × 48 × 2 = 2 784 строки. Второй — 672 часа февраля × 2 турбины = 1 344 строки, с отдельными точками для первых и вторых суток. `p10/p90` — эмпирические квантили остатков, подогнанные на обучающем периоде.
 
 Один issue с погодой из реального архива и моделью v0, затем пересчёт после публикации 12Z:
 
 ```bash
-uv run --frozen python -m windagent issue --at 2026-01-31T18:00Z --llm scripted --model-adapter windagent.models.v0:predict
-uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted --model-adapter windagent.models.v0:predict
+uv run --frozen python -m windagent issue --at 2026-01-31T18:00Z --llm scripted --model-adapter windagent.model.v0:predict_power
+uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted --model-adapter windagent.model.v0:predict_power
 ```
 
 Выход каждого запуска: `runs/<timestamp>-<id>/{forecast.csv,inputs.json,dq_report.json,comparison.json,decision.json,trace.jsonl,report.md,memory.json,status.json}`. Результаты разделены по версиям. Синтетический режим запускается отдельно: `make demo`, каждый файл там обозначен `prediction_kind=demo`.
@@ -58,19 +58,19 @@ uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted 
 make verify
 ```
 
-Проверка занимает секунды: два выпуска 06Z→12Z, полный trace из 11 шагов, отказ от будущего рана в 19:00, контроль всех 2 784 строк CSV, 1 344 часовых строк и реальный пересчёт на архиве. Ожидаемый финал — две строки `PASS`. MAE на январском dev-окне будет добавлен после LOC-9/17; фактов февраля 2026 в предоставленных файлах нет.
+Проверка занимает секунды: два выпуска 06Z→12Z, полный trace из 11 шагов, отказ от будущего рана в 19:00, контроль всех 2 784 строк CSV, 1 344 часовых строк и реальный пересчёт на архиве. Ожидаемый финал — две строки `PASS`. Дополнительно `make backtest-dev` считает январские метрики; фактов февраля 2026 в предоставленных файлах нет.
 
 ## Данные и модель
 
-Входные CSV — в `task context/`. Ресёрч-код SCADA — `research/scada_load.py`, боевой пакет LOC-8 готовит Akylbek. v0 калибрует линейный MOS на ноябре–декабре 2025, затем применяет его к архивному прогнозу ветра и эмпирической кривой. Это воспроизводимый ориентир, не проверенная точность. Для v1 адаптер `windagent.models.v0:predict` заменяется контрактом LOC-12 без изменения схемы issue.
+Входные CSV — в `task context/`. SCADA-пакет LOC-8 — `windagent/data/scada.py`. v0 калибрует линейный MOS и эмпирические интервалы на ноябре–декабре 2025, затем применяет модель к архивному прогнозу ветра. Для v1 адаптер `windagent.model.v0:predict_power` заменяется контрактом LOC-12 без изменения схемы issue.
 
 ## Результаты
 
-Тестовые CSV сформированы офлайн. Показатели качества скрытого февраля неизвестны. Метрики Jan 2026, сравнение с persistence и квалификация v1 появятся после LOC-9/10. Следы отдельного выпуска можно изучить в `trace.jsonl` и `report.md`.
+Тестовые CSV сформированы офлайн. Показатели качества скрытого февраля неизвестны. На январском dev-окне v0 даёт MAE **0.174** для T1 и **0.177** для T2 (нормализованная мощность, обе части горизонта); persistence ≈0.335. Полные метрики и покрытие — в [отчёте](docs/research/backtest-v0.md) и `reports/backtest_v0_dev.csv`. Следы отдельного выпуска можно изучить в `trace.jsonl` и `report.md`.
 
 ## Ограничения и развитие
 
-Текущий бэктест исполняет day-ahead 18:00 UTC и одну сцену пересчёта. Нет калиброванных P10/P90, полной оценки dev и live-цикла с фактическими измерениями. Дашборд LOC-26 показывает срез 15–19 января и сцену re-issue; [сценарий демо](docs/demo-storyboard.md). В [rubric-map](docs/research/rubric-map.md) указан статус доказательств по критериям жюри.
+Текущий бэктест исполняет day-ahead 18:00 UTC и одну сцену пересчёта. Эмпирические P10/P90 требуют проверки покрытия; live-цикл с фактическими измерениями ещё не подключён. Дашборд LOC-26 показывает срез 15–19 января и сцену re-issue; [сценарий демо](docs/demo-storyboard.md). В [rubric-map](docs/research/rubric-map.md) указан статус доказательств по критериям жюри.
 
 ## Почему не X
 

@@ -20,14 +20,14 @@ def main():
     issue.add_argument("--output", type=Path, default=Path("runs"))
     issue.add_argument("--model-adapter", help="module:function implementing the LOC-12 contract")
     backtest = commands.add_parser("backtest")
-    backtest.add_argument("--window", choices=["test"], default="test")
+    backtest.add_argument("--window", choices=["test", "dev"], default="test")
     backtest.add_argument("--llm", choices=["scripted"], default="scripted")
     args = parser.parse_args()
     try:
         if args.command == "backtest":
-            from windagent.backtest import replay_test
-            paths = replay_test()
-            print(paths[0], paths[1], paths[2])
+            from windagent.backtest import run_and_write
+            paths = run_and_write(args.window)
+            print(*paths)
             return 0
         planner = None
         if args.llm == "anthropic":

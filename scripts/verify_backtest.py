@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from windagent.agent.runtime import run_issue
-from windagent.backtest import replay_test
+from windagent.backtest import run_and_write
 from windagent.clock import assert_as_of, latest_available_run
 
 
@@ -21,14 +21,14 @@ def main():
         pass
     else:
         raise AssertionError("12Z was accepted at 19:00 UTC")
-    path, flat_path, metadata = replay_test()
+    path, flat_path = run_and_write("test")
     with path.open() as file:
         rows = list(csv.DictReader(file))
     with flat_path.open() as file:
         flat = list(csv.DictReader(file))
     assert len(rows) == 2784 and len(flat) == 1344
     assert len({row["issue_time_utc"] for row in rows}) == 29
-    assert all(row["p50"] and row["p10"] == row["p90"] == "" for row in rows)
+    assert all(row["p50"] and row["p10"] and row["p90"] for row in rows)
     for row in rows:
         issue = datetime.fromisoformat(row["issue_time_utc"].replace("Z", "+00:00"))
         run = datetime.fromisoformat(row["nwp_run_init_utc"].replace("Z", "+00:00"))
@@ -36,9 +36,9 @@ def main():
         assert_as_of(issue, run, [target])
     with tempfile.TemporaryDirectory(prefix="windagent-real-") as root:
         first = run_issue(datetime(2026, 1, 31, 18, tzinfo=timezone.utc), cache, Path(root),
-                          model_adapter="windagent.models.v0:predict")
+                          model_adapter="windagent.model.v0:predict_power")
         second = run_issue(datetime(2026, 1, 31, 20, tzinfo=timezone.utc), cache, Path(root),
-                           model_adapter="windagent.models.v0:predict")
+                           model_adapter="windagent.model.v0:predict_power")
         with (second / "forecast.csv").open() as file:
             revision = list(csv.DictReader(file))
         assert len(revision) == 96 and all(r["nwp_run_init_utc"] == "2026-01-31T12:00:00Z" for r in revision)

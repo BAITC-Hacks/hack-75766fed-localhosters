@@ -1,117 +1,171 @@
-"""LOC-17 v0: offline as-of day-ahead replay over the committed ECMWF archive."""
-import csv
+"""As-of бэктест: dayahead-выпуски на реальных архивных ранах ECMWF IFS (Open-Meteo Single Runs).
+
+    python -m windagent.backtest --window test   # 29 выпусков 31.01..28.02.2026 -> submission/
+    python -m windagent.backtest --window dev    # 31 выпуск за январь 2026, есть факты -> reports/ (MAE)
+
+Правило доступности рана — windagent.clock (per-cycle: +8 ч 00Z/12Z, +7 ч 06Z/18Z).
+Модель — pluggable: windagent.model.v0.predict_series (MOS + кривая). Обе турбины получают один ветер
+(одна NWP-ячейка), различаются только фактами.
+"""
+
+from __future__ import annotations
+
+import argparse
 import json
-import math
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from windagent.clock import assert_as_of, latest_available_run
-from windagent.config import Settings
+from windagent import clock
+from windagent.eval.metrics import by_lead_block, mae, skill
 
 ROOT = Path(__file__).resolve().parents[1]
-NWP = ROOT / "data/nwp/single_runs_ecmwf_ifs_feb2026.parquet"
-PREVIOUS = ROOT / "data/nwp_cache/previous_runs_nov2025_jan2026/ecmwf_ifs.json"
+RUNS_PARQUETS = [
+    ROOT / "data/nwp/single_runs_ecmwf_ifs_feb2026.parquet",
+    ROOT / "data/nwp/single_runs_ecmwf_ifs_jan2026.parquet",
+]
+WINDOWS = {
+    # первый и последний ЦЕЛЕВОЙ день (по SCADA); выпуск — 18:00 UTC накануне
+    "test": (date(2026, 2, 1), date(2026, 3, 1)),   # 29 выпусков: 31.01 .. 28.02 (последний покрывает 1-2 марта)
+    "dev": (date(2026, 1, 1), date(2026, 1, 31)),   # 31 выпуск: 31.12 .. 30.01, факты есть
+}
+TEST_LAST_TARGET_SCADA = pd.Timestamp("2026-02-28T23:00", tz="+06:00")
+TURBINES = ("T1", "T2")
+SUBMISSION_COLS = ["issue_time_utc", "issue_time_scada", "target_time_scada", "target_time_utc", "turbine",
+                   "lead_h", "nwp_run_init_utc", "nwp_lead_h", "issue_kind", "p10", "p50", "p90",
+                   "outside_test_period", "model_version"]
 
 
-def iso(value):
-    return value.isoformat().replace("+00:00", "Z")
+def load_runs() -> dict[datetime, pd.DataFrame]:
+    frames = [pd.read_parquet(p) for p in RUNS_PARQUETS if p.exists()]
+    if not frames:
+        raise FileNotFoundError("no Single Runs parquet found; run windagent.dump_weather / scripts/dump_dev_runs.py")
+    df = pd.concat(frames, ignore_index=True).drop_duplicates(["run_init_utc", "valid_utc"])
+    runs = {}
+    for run_init, g in df.groupby("run_init_utc"):
+        runs[run_init.to_pydatetime()] = g.set_index("valid_utc").sort_index()
+    return runs
 
 
-def fit_mos():
-    """Fit on Nov–Dec 2025 Previous Runs against observed SCADA wind; Jan is held out."""
-    from research.scada_load import load_hourly
-
-    forecast = json.loads(PREVIOUS.read_text())
-    if forecast["hourly_units"]["wind_speed_100m_previous_day1"] != "m/s":
-        raise ValueError("MOS training wind has wrong units")
-    hourly = forecast["hourly"]
-    table = pd.DataFrame({
-        "ts": pd.to_datetime(hourly["time"], utc=True),
-        "nwp": hourly["wind_speed_100m_previous_day1"],
-    }).set_index("ts")
-    scada = load_hourly("T1")[["ws"]]
-    joined = table.join(scada, how="inner")
-    joined = joined.loc[(joined.index >= "2025-11-01") & (joined.index < "2026-01-01")].dropna()
-    if len(joined) < 1000:
-        raise ValueError("Insufficient MOS training rows")
-    coefficient, intercept = np.polyfit(joined["nwp"].to_numpy(), joined["ws"].to_numpy(), 1)
-    return {"a": float(coefficient), "b": float(intercept), "train_rows": int(len(joined)),
-            "train_start": "2025-11-01", "train_end_exclusive": "2026-01-01",
-            "source": "Previous Runs day1 + SCADA T1", "target": "site wind speed m/s"}
+def load_model(name: str):
+    if name == "v0":
+        from windagent.model import v0
+        params = v0.load_params()
+        return lambda ws: v0.predict_series(ws, params), params["model_version"]
+    raise ValueError(f"unknown model {name}")
 
 
-def power(ws100, mos):
-    site_wind = mos["a"] * float(ws100) + mos["b"]
-    return round(float(np.clip(1 / (1 + math.exp(-0.705 * (site_wind - 7.89))), 0.01, 0.99)), 6)
-
-
-def replay_test(output=ROOT / "submission"):
-    settings = Settings.from_env()
-    if settings.issue_hour_utc != 18 or settings.horizon_hours != 48:
-        raise ValueError("v0 day-ahead replay requires ISSUE_HOUR_UTC=18 and HORIZON_HOURS=48")
-    mos = fit_mos()
-    archive = pd.read_parquet(NWP)
-    archive["run_init_utc"] = pd.to_datetime(archive["run_init_utc"], utc=True)
-    archive["valid_utc"] = pd.to_datetime(archive["valid_utc"], utc=True)
-    runs = {run.to_pydatetime(): group.set_index("valid_utc") for run, group in archive.groupby("run_init_utc")}
-    output.mkdir(parents=True, exist_ok=True)
-    zone = timezone(timedelta(hours=settings.scada_tz_offset_hours))
+def run_window(window: str, model: str = "v0") -> pd.DataFrame:
+    runs = load_runs()
+    predict, model_version = load_model(model)
+    first, last = WINDOWS[window]
     rows = []
-    for day in range(29):
-        issue = datetime(2026, 1, 31, 18, tzinfo=timezone.utc) + timedelta(days=day)
-        run = latest_available_run(issue, runs)
-        targets = [issue + timedelta(hours=h) for h in range(48)]
-        assert_as_of(issue, run, targets)
-        block = runs[run]
-        if not set(targets).issubset(block.index):
-            raise ValueError(f"INCOMPLETE_HORIZON: {iso(issue)} run {iso(run)}")
-        for turbine in ("T1", "T2"):
-            for h, target in enumerate(targets):
-                weather = block.loc[pd.Timestamp(target)]
-                if pd.isna(weather["wind_speed_100m"]):
-                    raise ValueError(f"Missing ws100 {iso(run)} {iso(target)}")
+    for issue in clock.dayahead_issues(first, last):
+        run_init = clock.latest_available_run(issue, runs.keys())
+        if run_init is None:
+            raise RuntimeError(f"no available run for issue {issue}")
+        nwp = runs[run_init]
+        tgt = clock.targets(issue)
+        ws = nwp.reindex(pd.DatetimeIndex(tgt))["wind_speed_100m"]
+        if ws.isna().any():
+            raise RuntimeError(f"run {run_init} does not cover horizon of issue {issue}")
+        pred = predict(ws.values)
+        for turbine in TURBINES:
+            for i, t in enumerate(tgt):
                 rows.append({
-                    "issue_time_utc": iso(issue), "issue_time_scada": issue.astimezone(zone).isoformat(),
-                    "target_time_scada": target.astimezone(zone).isoformat(), "target_time_utc": iso(target),
-                    "turbine": turbine, "lead_h": h, "nwp_run_init_utc": iso(run),
-                    "nwp_lead_h": int((target - run).total_seconds() / 3600), "run_cycle": run.hour,
-                    "issue_kind": "dayahead", "p10": "", "p50": power(weather["wind_speed_100m"], mos),
-                    "p90": "", "outside_test_period": target < datetime(2026, 1, 31, 18, tzinfo=timezone.utc)
-                    or target >= datetime(2026, 2, 28, 18, tzinfo=timezone.utc),
-                    "model_version": "mos-logistic-v0", "interval_label": "start",
+                    "issue_time_utc": clock.iso_utc(issue),
+                    "issue_time_scada": clock.iso_scada(issue),
+                    "target_time_scada": clock.iso_scada(t),
+                    "target_time_utc": clock.iso_utc(t),
+                    "turbine": turbine,
+                    "lead_h": i,
+                    "nwp_run_init_utc": clock.iso_utc(run_init),
+                    "nwp_lead_h": clock.lead_h(run_init, t),
+                    "issue_kind": "dayahead",
+                    "p10": round(float(pred.p10[i]), 4),
+                    "p50": round(float(pred.p50[i]), 4),
+                    "p90": round(float(pred.p90[i]), 4),
+                    "outside_test_period": bool(window == "test" and clock.to_scada(t) > TEST_LAST_TARGET_SCADA),
+                    "model_version": model_version,
                 })
-    path = output / "forecast_feb2026_dayahead_v0.csv"
-    with path.open("w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=list(rows[0]), lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(rows)
-    flat = []
-    by_target = {}
-    for row in rows:
-        if row["outside_test_period"]:
-            continue
-        by_target.setdefault((row["target_time_utc"], row["turbine"]), {})["first" if row["lead_h"] < 24 else "second"] = row
-    for (target, turbine), versions in sorted(by_target.items()):
-        first = versions.get("first")
-        second = versions.get("second")
-        used = first or second
-        flat.append({"target_time_utc": target, "target_time_scada": used["target_time_scada"], "turbine": turbine,
-                     "p50_h1_24": first["p50"] if first else "", "p50_h25_48": second["p50"] if second else "",
-                     "p10": "", "p90": "", "issue_time_utc_used": used["issue_time_utc"],
-                     "nwp_run_init_utc": used["nwp_run_init_utc"], "lead_h": used["lead_h"],
-                     "model_version": used["model_version"]})
-    flat_path = output / "forecast_feb2026_hourly_v0.csv"
-    with flat_path.open("w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=list(flat[0]), lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(flat)
-    metadata = {"model": mos, "issue_rows": len(rows), "hourly_rows": len(flat),
-                "source": str(NWP.relative_to(ROOT)), "interval_label": "start",
-                "availability_lag_hours_by_cycle": {str(k): v for k, v in __import__("windagent.clock", fromlist=["AVAIL_LAG"]).AVAIL_LAG["ecmwf_ifs"].items()},
-                "quality_metrics": "pending independent SCADA evaluation; February 2026 actuals hidden",
-                "quantiles": "not calibrated in v0; p10 and p90 intentionally blank"}
-    (output / "forecast_feb2026_v0_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
-    return path, flat_path, metadata
+    return pd.DataFrame(rows, columns=SUBMISSION_COLS)
+
+
+def attach_actuals(df: pd.DataFrame) -> pd.DataFrame:
+    """Факты SCADA (почасовое среднее, UTC) для окон с данными; NaN там, где фактов нет."""
+    from research.scada_load import load_hourly
+    out = []
+    for turbine, g in df.groupby("turbine"):
+        h = load_hourly(turbine)
+        ts = pd.to_datetime(g["target_time_utc"], utc=True)
+        g = g.copy()
+        g["actual"] = h["p"].reindex(ts).values
+        g["actual_ws"] = h["ws"].reindex(ts).values
+        # бейзлайны, доступные на момент выпуска: последнее значение и медиана последних 7 суток
+        issue = pd.to_datetime(g["issue_time_utc"], utc=True)
+        last_val = h["p"].reindex(issue - pd.Timedelta(hours=1)).values
+        g["bl_last_value"] = last_val
+        med7 = h["p"].rolling("7D", min_periods=24).median()
+        g["bl_median_7d"] = med7.reindex(issue - pd.Timedelta(hours=1)).values
+        out.append(g)
+    return pd.concat(out).sort_values(["issue_time_utc", "turbine", "lead_h"]).reset_index(drop=True)
+
+
+def evaluate(df: pd.DataFrame) -> pd.DataFrame:
+    d = attach_actuals(df)
+    tables = []
+    for col, name in (("p50", "v0"), ("bl_last_value", "last_value"), ("bl_median_7d", "median_7d")):
+        t = by_lead_block(d, col)
+        t.insert(0, "model", name)
+        tables.append(t)
+    res = pd.concat(tables, ignore_index=True)
+    ref = res[(res.model == "median_7d")].set_index(["turbine", "block"])["mae"]
+    res["skill_vs_median_7d_pct"] = [
+        round(skill(r.mae, ref.get((r.turbine, r.block), np.nan)), 1) for r in res.itertuples()
+    ]
+    return res
+
+
+def run_and_write(window: str, model: str = "v0", out: Path = ROOT / "submission", reports: Path = ROOT / "reports"):
+    df = run_window(window, model)
+    out.mkdir(parents=True, exist_ok=True)
+    per_issue = out / f"forecast_{window}_dayahead_{model}.csv"
+    df.to_csv(per_issue, index=False)
+    n_issues = df.issue_time_utc.nunique()
+    print(f"{per_issue}: {len(df)} rows, {n_issues} issues, runs used: {df.nwp_run_init_utc.nunique()}")
+
+    from scripts.flatten_submission import flatten
+    if window == "test":
+        hourly, plant = flatten(df, "2026-02-01T00:00", "2026-02-28T23:00")
+    else:
+        hourly, plant = flatten(df)
+    hourly_path = out / f"forecast_{window}_hourly_{model}.csv"
+    hourly.to_csv(hourly_path, index=False)
+    plant.to_csv(out / f"forecast_{window}_hourly_plant_{model}.csv", index=False)
+    print(f"{hourly_path}: {len(hourly)} rows, {len(plant)} hours")
+
+    if window == "dev":
+        res = evaluate(df)
+        reports.mkdir(parents=True, exist_ok=True)
+        rep = reports / f"backtest_{model}_{window}.csv"
+        res.to_csv(rep, index=False)
+        print(res.to_string(index=False))
+        print(f"-> {rep}")
+    return per_issue, hourly_path
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--window", choices=WINDOWS, default="test")
+    ap.add_argument("--model", default="v0")
+    ap.add_argument("--out", type=Path, default=ROOT / "submission")
+    ap.add_argument("--reports", type=Path, default=ROOT / "reports")
+    args = ap.parse_args()
+
+    run_and_write(args.window, args.model, args.out, args.reports)
+
+
+if __name__ == "__main__":
+    main()

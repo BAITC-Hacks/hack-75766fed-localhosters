@@ -9,16 +9,15 @@ import pandas as pd
 
 from research.scada_load import load_hourly
 from windagent.agent.runtime import run_issue
-from windagent.backtest import PREVIOUS, fit_mos, power
+from windagent.model.v0 import PREV_RUNS_JSON, predict_series
 
 
 def main():
     root = Path("dashboard/public/data")
     root.mkdir(parents=True, exist_ok=True)
     scada = load_hourly("T1")
-    source = json.loads(PREVIOUS.read_text())
+    source = json.loads(PREV_RUNS_JSON.read_text())
     hourly = source["hourly"]
-    mos = fit_mos()
     sample = []
     for i, value in enumerate(hourly["time"]):
         stamp = pd.Timestamp(value, tz="UTC")
@@ -27,15 +26,15 @@ def main():
         wind = hourly["wind_speed_100m_previous_day1"][i]
         actual = scada.loc[stamp, "p"] if stamp in scada.index else None
         if wind is not None:
-            sample.append({"time": stamp.isoformat(), "forecast": power(wind, mos),
+            sample.append({"time": stamp.isoformat(), "forecast": round(float(predict_series([wind]).p50.iloc[0]), 6),
                            "actual": round(float(actual), 6) if pd.notna(actual) else None})
     valid = [abs(row["forecast"] - row["actual"]) for row in sample if row["actual"] is not None]
     with tempfile.TemporaryDirectory(prefix="windagent-dashboard-") as temporary:
         cache = Path("data/nwp_cache/single_runs/ecmwf_ifs")
         first = run_issue(datetime(2026, 1, 31, 18, tzinfo=timezone.utc), cache, Path(temporary),
-                          model_adapter="windagent.models.v0:predict")
+                          model_adapter="windagent.model.v0:predict_power")
         second = run_issue(datetime(2026, 1, 31, 20, tzinfo=timezone.utc), cache, Path(temporary),
-                           model_adapter="windagent.models.v0:predict")
+                           model_adapter="windagent.model.v0:predict_power")
         def read(path):
             with (path / "forecast.csv").open() as file:
                 forecast = [row for row in csv.DictReader(file) if row["turbine"] == "turbine_1"]

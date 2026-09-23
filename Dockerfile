@@ -8,6 +8,7 @@ COPY scripts ./scripts
 COPY tests/fixtures ./tests/fixtures
 COPY research ./research
 COPY data/nwp ./data/nwp
+COPY models ./models
 COPY data/nwp_cache/previous_runs_nov2025_jan2026/ecmwf_ifs.json ./data/nwp_cache/previous_runs_nov2025_jan2026/ecmwf_ifs.json
 COPY data/nwp_cache/single_runs/ecmwf_ifs ./data/nwp_cache/single_runs/ecmwf_ifs
 COPY ["task context/", "task context/"]
