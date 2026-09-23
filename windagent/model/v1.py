@@ -129,6 +129,13 @@ def _require_columns(frame: pd.DataFrame, required: set[str], source: str) -> No
         raise ValueError(f"{source} misses columns: {sorted(missing)}")
 
 
+def _issue_time(rows: pd.DataFrame) -> pd.Series:
+    """Issue time per row: the dayahead 18:00 UTC, or an explicit issue_time_utc (LOC-12 serving, reissues)."""
+    if "issue_time_utc" in rows:
+        return pd.to_datetime(rows["issue_time_utc"], utc=True)
+    return pd.to_datetime(rows["issue_day"], utc=True) + pd.Timedelta(hours=ISSUE_HOUR_UTC)
+
+
 def _holdout_mask(issue_day: pd.Series, holdout: Holdout) -> pd.Series:
     days = pd.to_datetime(issue_day).dt.tz_localize(None)
     return days.ge(holdout.issue_start) & days.lt(holdout.issue_end)
@@ -200,9 +207,7 @@ def _select_previous_run(
     day1 = model_frame["ws100_previous_day1"].reindex(valid).to_numpy(float)
     day2 = model_frame["ws100_previous_day2"].reindex(valid).to_numpy(float)
 
-    issue_time = pd.to_datetime(rows["issue_day"], utc=True) + pd.Timedelta(
-        hours=ISSUE_HOUR_UTC
-    )
+    issue_time = _issue_time(rows)
     previous_day1_run = rows["valid_utc"].dt.floor("6h") - pd.Timedelta(days=1)
     day1_available = previous_day1_run + pd.Timedelta(
         hours=availability_lag_h
@@ -216,9 +221,7 @@ def _base_features(
     single_runs: pd.DataFrame, previous_runs: pd.DataFrame
 ) -> pd.DataFrame:
     rows = single_runs.copy()
-    issue_time = pd.to_datetime(rows["issue_day"], utc=True) + pd.Timedelta(
-        hours=ISSUE_HOUR_UTC
-    )
+    issue_time = _issue_time(rows)
     hours_since_issue = (
         (rows["valid_utc"] - issue_time).dt.total_seconds() / 3600
     )
@@ -614,6 +617,13 @@ def main() -> None:
             ]
         ].to_string(index=False)
     )
+
+
+def predict_power(request: dict) -> dict:
+    """LOC-12 agent adapter: `--model-adapter windagent.model.v1:predict_power` (see windagent.model.serve)."""
+    from windagent.model.serve import predict_power as serve
+
+    return serve(request)
 
 
 if __name__ == "__main__":
