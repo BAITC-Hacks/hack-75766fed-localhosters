@@ -74,9 +74,9 @@ def predict_power(request: dict) -> dict:
         "hourly": [
             {
                 "valid_time_utc": row["valid_time_utc"],
-                "power_normalized": round(float(out.p50[i]), 6),
-                "p10": round(float(out.p10[i]), 6),
-                "p90": round(float(out.p90[i]), 6),
+                "power_normalized": float(out.p50[i]),
+                "p10": float(out.p10[i]),
+                "p90": float(out.p90[i]),
             }
             for i, row in enumerate(request["hourly"])
         ],

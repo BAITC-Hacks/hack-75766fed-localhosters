@@ -1,0 +1,10 @@
+{
+  "publish": true,
+  "reason": "initial_issue",
+  "used_runs": [
+    "2026-01-31T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": false,
+  "summary_ru": "Прогноз прошёл проверку входных данных."
+}

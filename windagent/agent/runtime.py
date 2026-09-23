@@ -3,6 +3,7 @@ import csv
 import importlib
 import json
 import math
+import shutil
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
@@ -168,12 +169,15 @@ def save_forecast(path, forecasts, inputs, settings):
     return {"rows": sum(len(f.hourly) for f in forecasts), "file": path.name}
 
 
-def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_adapter=None):
+def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_adapter=None, run_id=None, stable=False):
+    """run_id: fixed directory name (replay/backtest); stable: omit wall-clock timings so reruns give identical files."""
     at = utc(at)
     settings = settings or Settings.from_env()
     planner = planner or ScriptedPlanner()
     output.mkdir(parents=True, exist_ok=True)
-    directory = output / (at.strftime("%Y-%m-%dT%H-%MZ") + "-" + uuid4().hex[:8])
+    directory = output / (run_id or at.strftime("%Y-%m-%dT%H-%MZ") + "-" + uuid4().hex[:8])
+    if run_id and directory.exists():
+        shutil.rmtree(directory)
     directory.mkdir()
     trace = Trace()
     try:
@@ -246,4 +250,4 @@ def run_issue(at, cache, output, demo=False, planner=None, settings=None, model_
         write_json(directory / "status.json", {"status": "failed", "error": str(error)})
         raise
     finally:
-        trace.write(directory / "trace.jsonl")
+        trace.write(directory / "trace.jsonl", timings=not stable)

@@ -1,7 +1,10 @@
 """As-of бэктест: dayahead-выпуски на реальных архивных ранах ECMWF IFS (Open-Meteo Single Runs).
 
-    python -m windagent.backtest --window test   # 29 выпусков 31.01..28.02.2026 -> submission/
-    python -m windagent.backtest --window dev    # 31 выпуск за январь 2026, есть факты -> reports/ (MAE)
+    python -m windagent backtest --window test   # 29 выпусков 31.01..28.02.2026 через агента -> submission/, runs/backtest/test/
+    python -m windagent backtest --window dev    # 31 выпуск за январь 2026, есть факты -> reports/ (MAE), runs/backtest/dev/
+
+Каждый выпуск проходит полный цикл агента (run_issue: погода → проверка → модель → решение → трейс);
+сабмит собирается из его прогнозов. run_window() — прямой расчёт той же модели, эталон для регрессии.
 
 Правило доступности рана — windagent.clock (per-cycle: +8 ч 00Z/12Z, +7 ч 06Z/18Z).
 Модель — pluggable: windagent.model.v0.predict_series (MOS + кривая). Обе турбины получают один ветер
@@ -12,7 +15,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date, datetime, timedelta
+import shutil
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -93,6 +97,68 @@ def run_window(window: str, model: str = "v0") -> pd.DataFrame:
     return pd.DataFrame(rows, columns=SUBMISSION_COLS)
 
 
+AGENT_CACHE = ROOT / "data/nwp_cache/single_runs/ecmwf_ifs"
+AGENT_RUNS = ROOT / "runs/backtest"
+ADAPTERS = {"v0": "windagent.model.v0:predict_power"}
+TURBINE_IDS = {"turbine_1": "T1", "turbine_2": "T2"}
+
+
+def _repo_relative(path: Path) -> Path:
+    """Relative path in traces when run from the repo root, so committed runs match on any machine."""
+    try:
+        return path.relative_to(Path.cwd())
+    except ValueError:
+        return path
+
+
+def run_window_agent(window: str, model: str = "v0", planner=None, reissue: bool | None = None,
+                     out_root: Path = AGENT_RUNS) -> tuple[pd.DataFrame, pd.DataFrame, Path]:
+    """Каждый выпуск окна проходит полный цикл агента (windagent.agent.runtime.run_issue).
+
+    Dayahead в 18:00 UTC на каждый целевой день; если к 20:00 UTC опубликован более свежий ран (12Z),
+    агент делает повторный выпуск (issue_kind=reissue). Возвращает сабмит dayahead, сабмит reissue
+    и папку с прогонами runs/backtest/<window>/<время выпуска>-<вид>/.
+    """
+    from windagent.agent.runtime import run_issue
+    from windagent.config import Settings
+
+    settings = Settings.from_env()
+    reissue = settings.reissue_on_new_run if reissue is None else reissue
+    adapter = ADAPTERS[model]
+    root = out_root / window
+    if root.exists():
+        shutil.rmtree(root)  # чистый replay: память агента строится только из прогонов этого окна
+    cache = _repo_relative(AGENT_CACHE)
+    available_runs = [datetime.strptime(p.stem, "%Y-%m-%dT%H%MZ").replace(tzinfo=timezone.utc)
+                      for p in AGENT_CACHE.glob("????-??-??T????Z.json")]
+    first, last = WINDOWS[window]
+    frames = {"dayahead": [], "reissue": []}
+    for issue in clock.dayahead_issues(first, last):
+        plan = [(issue, "dayahead")]
+        later = issue + timedelta(hours=2)
+        if reissue and clock.latest_available_run(later, available_runs) != clock.latest_available_run(issue, available_runs):
+            plan.append((later, "reissue"))
+        for at, kind in plan:
+            run_dir = run_issue(at, cache, root, planner=planner, settings=settings, model_adapter=adapter,
+                                run_id=f"{at.strftime('%Y-%m-%dT%H%MZ')}-{kind}", stable=True)
+            status = json.loads((run_dir / "status.json").read_text())["status"]
+            if status != "published":
+                continue
+            f = pd.read_csv(run_dir / "forecast.csv")
+            f["turbine"] = f["turbine"].map(TURBINE_IDS)
+            f["issue_kind"] = kind
+            f["issue_time_scada"] = clock.iso_scada(at)
+            f["target_time_scada"] = [clock.iso_scada(pd.Timestamp(t).to_pydatetime()) for t in f.target_time_utc]
+            f["outside_test_period"] = [bool(window == "test" and clock.to_scada(pd.Timestamp(t).to_pydatetime()) > TEST_LAST_TARGET_SCADA)
+                                        for t in f.target_time_utc]
+            for col in ("p10", "p50", "p90"):
+                f[col] = f[col].astype(float).round(4)
+            frames[kind].append(f[SUBMISSION_COLS])
+    dayahead = pd.concat(frames["dayahead"], ignore_index=True)
+    reissues = pd.concat(frames["reissue"], ignore_index=True) if frames["reissue"] else pd.DataFrame(columns=SUBMISSION_COLS)
+    return dayahead, reissues, root
+
+
 def attach_actuals(df: pd.DataFrame) -> pd.DataFrame:
     """Факты SCADA (почасовое среднее, UTC) для окон с данными; NaN там, где фактов нет."""
     from research.scada_load import load_hourly
@@ -128,13 +194,24 @@ def evaluate(df: pd.DataFrame) -> pd.DataFrame:
     return res
 
 
-def run_and_write(window: str, model: str = "v0", out: Path = ROOT / "submission", reports: Path = ROOT / "reports"):
-    df = run_window(window, model)
+def run_and_write(window: str, model: str = "v0", out: Path = ROOT / "submission", reports: Path = ROOT / "reports",
+                  planner=None, via_agent: bool = True):
+    if via_agent:
+        df, reissues, runs_root = run_window_agent(window, model, planner=planner)
+        n_runs = len(list(runs_root.iterdir()))
+        print(f"agent: {n_runs} runs ({df.issue_time_utc.nunique()} dayahead, {reissues.issue_time_utc.nunique()} reissue) -> "
+              f"{_repo_relative(runs_root)}")
+    else:
+        df, reissues = run_window(window, model), None
     out.mkdir(parents=True, exist_ok=True)
     per_issue = out / f"forecast_{window}_dayahead_{model}.csv"
     df.to_csv(per_issue, index=False)
     n_issues = df.issue_time_utc.nunique()
     print(f"{per_issue}: {len(df)} rows, {n_issues} issues, runs used: {df.nwp_run_init_utc.nunique()}")
+    if reissues is not None and len(reissues):
+        intraday = out / f"forecast_{window}_intraday_{model}.csv"
+        reissues.to_csv(intraday, index=False)
+        print(f"{intraday}: {len(reissues)} rows, {reissues.issue_time_utc.nunique()} reissues")
 
     from scripts.flatten_submission import flatten
     if window == "test":
@@ -162,9 +239,10 @@ def main() -> None:
     ap.add_argument("--model", default="v0")
     ap.add_argument("--out", type=Path, default=ROOT / "submission")
     ap.add_argument("--reports", type=Path, default=ROOT / "reports")
+    ap.add_argument("--direct", action="store_true", help="прямой расчёт без агента (эталон для регрессии)")
     args = ap.parse_args()
 
-    run_and_write(args.window, args.model, args.out, args.reports)
+    run_and_write(args.window, args.model, args.out, args.reports, via_agent=not args.direct)
 
 
 if __name__ == "__main__":
