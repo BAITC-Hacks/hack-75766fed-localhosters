@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "initial_issue",
+  "used_runs": [
+    "2026-01-31T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": false,
+  "summary_ru": "Публикуем первый выпуск прогноза по доступному NWP‑запуску 2026-01-31T06:00:00Z. Предыдущего выпуска нет, поэтому измеренные расхождения ветра и дельта мощности отсутствуют.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

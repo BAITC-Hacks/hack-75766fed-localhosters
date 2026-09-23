@@ -1,4 +1,4 @@
-.PHONY: setup verify demo dashboard dashboard-build docker data train backtest backtest-v0 backtest-dev
+.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train backtest backtest-v0 backtest-dev
 
 setup:
 	uv sync --frozen
@@ -10,6 +10,10 @@ verify:
 demo:
 	uv run --frozen python -m windagent issue --at 2026-01-31T18:00Z --llm scripted --demo
 	uv run --frozen python -m windagent issue --at 2026-01-31T20:00Z --llm scripted --demo
+
+# Тот же replay февраля, но решения принимает LLM (нужен OPENAI_API_KEY в .env); ~2.5 мин, ~$0.1.
+llm-replay:
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen --env-file .env python -m scripts.llm_replay --window test
 
 dashboard: dashboard/node_modules/.package-lock.json
 	uv run --frozen python -m scripts.export_dashboard

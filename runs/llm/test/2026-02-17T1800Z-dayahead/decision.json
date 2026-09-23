@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-17T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Годность пройдена: доступно 48 часов из 48, ограничений нет. Новый прогон NWP принят к публикации; расхождение ветра 0.142 м/с, изменение мощности по предыдущему выпуску незначимо.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

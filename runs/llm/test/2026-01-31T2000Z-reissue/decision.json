@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-01-31T12:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Новый прогон НМП изменил прогноз, публикация нужна. Расхождение по ветру 0.19 м/с при пороге 1.5 м/с, изменение мощности незначительное.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}

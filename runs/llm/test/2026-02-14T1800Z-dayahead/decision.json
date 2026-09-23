@@ -1,0 +1,13 @@
+{
+  "publish": true,
+  "reason": "new_nwp_run",
+  "used_runs": [
+    "2026-02-14T06:00:00Z"
+  ],
+  "corrections": [],
+  "reissue_recommended": true,
+  "summary_ru": "Новый прогон NWP получен, прогноз публикуем как новую версию. Расхождение по ветру 0.050 м/с, изменение мощности 0.053 — это ниже порога и не требует дополнительной корректировки.",
+  "planner": "openai",
+  "model_id": "gpt-5.4-mini",
+  "fallback_reason": null
+}
