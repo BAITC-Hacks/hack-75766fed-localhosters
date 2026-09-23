@@ -8,6 +8,8 @@ from hashlib import sha256
 from pathlib import Path
 from uuid import uuid4
 
+from pydantic import ValidationError
+
 from windagent.config import Settings
 from windagent.clock import assert_as_of, available_at
 from windagent.schemas import DataQualityReport, NwpForecast, PowerForecast, ScadaWindow, utc
@@ -39,40 +41,53 @@ def read_previous(root, at, demo):
     return {"path": str(path), "inputs": inputs, "memory": json.loads((path / "memory.json").read_text())}
 
 
+def read_archive_run(path, run):
+    """LOC-14 stores the original Open-Meteo response in one file per run."""
+    raw = json.loads(path.read_text())
+    if raw.get("hourly_units", {}).get("wind_speed_100m") != "m/s":
+        raise ValueError(f"INVALID_UNITS: {path}")
+    hourly = raw["hourly"]
+    return NwpForecast.model_validate({
+        "source": "Open-Meteo Single Runs", "model": "ecmwf_ifs", "data_kind": "archive",
+        "run_init_utc": run, "available_at_utc": available_at(run),
+        "hourly": [{
+            "valid_time_utc": datetime.fromisoformat(time).replace(tzinfo=timezone.utc),
+            "wind_speed_100m_ms": hourly["wind_speed_100m"][i],
+            "wind_direction_100m_deg": hourly["wind_direction_100m"][i],
+            "temperature_2m_c": hourly["temperature_2m"][i],
+        } for i, time in enumerate(hourly["time"]) if hourly["wind_speed_100m"][i] is not None],
+    })
+
+
 def fetch_nwp_forecast(cache, at, settings, demo):
+    if not demo:
+        # The cache holds hundreds of runs (LOC-18 training dump): pick by file name, parse newest first,
+        # and skip a run with missing values instead of failing the whole issue.
+        runs = []
+        for path in cache.glob("????-??-??T????Z.json"):
+            run = datetime.strptime(path.stem, "%Y-%m-%dT%H%MZ").replace(tzinfo=timezone.utc)
+            if available_at(run) <= at:
+                runs.append((run, path))
+        for run, path in sorted(runs, reverse=True):
+            try:
+                forecast = read_archive_run(path, run)
+            except ValidationError:
+                continue
+            assert_as_of(at, forecast.run_init_utc, [row.valid_time_utc for row in forecast.hourly if row.valid_time_utc >= at])
+            return forecast, path
+        raise ValueError(f"WEATHER_NOT_AVAILABLE: no eligible archive run in {cache}")
     candidates = []
-    paths = sorted(cache.glob("*.json")) if demo else sorted(cache.glob("????-??-??T????Z.json"))
-    for path in paths:
+    for path in sorted(cache.glob("*.json")):
         if path.name == "manifest.json":
             continue
-        if demo:
-            forecast = NwpForecast.model_validate_json(path.read_text())
-        else:
-            # LOC-14 stores the original Open-Meteo response in one file per run.
-            run = datetime.strptime(path.stem, "%Y-%m-%dT%H%MZ").replace(tzinfo=timezone.utc)
-            if available_at(run) > at:
-                continue
-            raw = json.loads(path.read_text())
-            if raw.get("hourly_units", {}).get("wind_speed_100m") != "m/s":
-                raise ValueError(f"INVALID_UNITS: {path}")
-            hourly = raw["hourly"]
-            forecast = NwpForecast.model_validate({
-                "source": "Open-Meteo Single Runs", "model": "ecmwf_ifs", "data_kind": "archive",
-                "run_init_utc": run, "available_at_utc": available_at(run),
-                "hourly": [{
-                    "valid_time_utc": datetime.fromisoformat(time).replace(tzinfo=timezone.utc),
-                    "wind_speed_100m_ms": hourly["wind_speed_100m"][i],
-                    "wind_direction_100m_deg": hourly["wind_direction_100m"][i],
-                    "temperature_2m_c": hourly["temperature_2m"][i],
-                } for i, time in enumerate(hourly["time"]) if hourly["wind_speed_100m"][i] is not None],
-            })
-        if forecast.data_kind != ("demo" if demo else "archive"):
+        forecast = NwpForecast.model_validate_json(path.read_text())
+        if forecast.data_kind != "demo":
             continue
         available = max(forecast.available_at_utc, available_at(forecast.run_init_utc))
         if available <= at:
             candidates.append((forecast.run_init_utc, path.name, forecast, path))
     if not candidates:
-        raise ValueError(f"WEATHER_NOT_AVAILABLE: no eligible {'demo' if demo else 'archive'} run in {cache}")
+        raise ValueError(f"WEATHER_NOT_AVAILABLE: no eligible demo run in {cache}")
     _, _, forecast, path = max(candidates, key=lambda item: item[:2])
     assert_as_of(at, forecast.run_init_utc, [row.valid_time_utc for row in forecast.hourly if row.valid_time_utc >= at])
     return forecast, path
