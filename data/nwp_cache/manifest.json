@@ -1,0 +1,2650 @@
+{
+  "runs": 116,
+  "rows": 11136,
+  "grid": [
+    43.620384,
+    78.47891
+  ],
+  "complete_horizon_lead_h": [
+    1,
+    72
+  ],
+  "nulls_lead_0": {
+    "wind_speed_100m": 0,
+    "wind_speed_80m": 0,
+    "wind_speed_10m": 0,
+    "wind_direction_100m": 0,
+    "wind_gusts_10m": 116,
+    "temperature_2m": 0,
+    "surface_pressure": 0
+  },
+  "nulls_lead_1_to_72": {
+    "wind_speed_100m": 0,
+    "wind_speed_80m": 0,
+    "wind_speed_10m": 0,
+    "wind_direction_100m": 0,
+    "wind_gusts_10m": 0,
+    "temperature_2m": 0,
+    "surface_pressure": 0
+  },
+  "previous_day1": {
+    "00Z": {
+      "max_abs_diff_ms": 0.0,
+      "passed": true
+    },
+    "06Z": {
+      "max_abs_diff_ms": 0.0,
+      "passed": true
+    },
+    "12Z": {
+      "max_abs_diff_ms": 0.0,
+      "passed": true
+    },
+    "18Z": {
+      "max_abs_diff_ms": 0.0,
+      "passed": true
+    }
+  },
+  "parquet_sha256": "af341bfef896e06cc3a67c852fb118b33035ec6d56c7bf1811a4a5b62e92d48a",
+  "requests": [
+    {
+      "key": "0935252eb76d337f7c3eb9ef692037f749211b666cff6697b67ff6716c64eea5",
+      "url": "https://previous-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m_previous_day1",
+        "start_date": "2026-02-01",
+        "end_date": "2026-02-01",
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:38.568036+00:00",
+      "sha256": "26170e45cd5da55dcab86ba0599158d007992dd76b6ceeac8e6a32a766daaa9d",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/requests/0935252eb76d337f7c3eb9ef692037f749211b666cff6697b67ff6716c64eea5.json"
+    },
+    {
+      "key": "da0252870303414c762b6de272d5eee5c46257bbbdb7e0a13cb5f26c9dddbdeb",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.643198,
+        "longitude": 78.538828,
+        "run": "2026-01-31T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:38.112775+00:00",
+      "sha256": "a7154c3331a8b0c11e7e504ce4791fdc8eb0fb3b84dd9b4d6adc9a5c17e4ac95",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/requests/da0252870303414c762b6de272d5eee5c46257bbbdb7e0a13cb5f26c9dddbdeb.json"
+    },
+    {
+      "key": "8f851a27ce6654b412978f8d69a975f7b7a221d067cf62a3cd92108ebe312386",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-01-31T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:25.671862+00:00",
+      "sha256": "f2227103246683a4733a2aa70e09628104ed32d93ee5fc97c3b9f3cad5c8f9bc",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-01-31T0000Z.json"
+    },
+    {
+      "key": "aa3b30f1e72715812b425ed969f16a87703aaacf035da60cc5e993a567ae5208",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-01-31T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:25.788583+00:00",
+      "sha256": "956ee6cd590a878c6a36efe6905431bac8032bfabb49d89c69ee50ee96116e0e",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-01-31T0600Z.json"
+    },
+    {
+      "key": "e06e8efa6b31db0ce5a3e51f6d54fc10a80a01bd587cfdd128e2c2c334230db9",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-01-31T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:25.896203+00:00",
+      "sha256": "af976172a9dabf299326e0b7320520873247f99cdc8b7ba40a5e4737631854ad",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-01-31T1200Z.json"
+    },
+    {
+      "key": "5a277649abab8a89719e2bdd0e9e2ca7c14ee913504e874db9dd21936334fc6d",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-01-31T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.004713+00:00",
+      "sha256": "4de7adbf03492b6841359eecb8147586c0ba1a91523b41acb72de537092829ee",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-01-31T1800Z.json"
+    },
+    {
+      "key": "593930d5ae9a55c29a0e6230be7767089dc3b96e692265987232eba8735bac87",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-01T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.120330+00:00",
+      "sha256": "a254d55ac9a230c94c0e29992a5024b4f084c4a22f176db4d18866c818d19d0b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-01T0000Z.json"
+    },
+    {
+      "key": "b6c63f84f7e3132c95814c8fe4bacfdfa5dcdedcee5b1d5bca7eef749e458fb4",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-01T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.234749+00:00",
+      "sha256": "910d4d2719b0ecbbd38c4a136fe03dfa10f2028d928b1d886a90e3c342fcd861",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-01T0600Z.json"
+    },
+    {
+      "key": "77153cbf996e8ad63e95ebef4a18c959320f7249e826260ff584959a39ecdeee",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-01T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.347800+00:00",
+      "sha256": "188dbfffe3b34687bbe6bb5f38abcf918995c144c4bb59049fedbf074ee88936",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-01T1200Z.json"
+    },
+    {
+      "key": "784ed7968d1b46215a1834ad250f058f8f9316169d9eb137c9c58dd2dc7a3316",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-01T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.457074+00:00",
+      "sha256": "bcee1ffa178d378688407b6446fe775c058f7740324fd47ead8f576aaa966703",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-01T1800Z.json"
+    },
+    {
+      "key": "f0350c2981215a36969bea3f684fb74aa2c608c9e772b6eff63320ad54bccb71",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-02T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.563944+00:00",
+      "sha256": "36c14285e27cc87f0f6ec9887b1ee88badffa3a19fb8aec50997412a6a678a29",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-02T0000Z.json"
+    },
+    {
+      "key": "ab4df6e56857104caa9e14e5a7dda3d8889fee7f97bc081f43972ae75de560d8",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-02T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.672849+00:00",
+      "sha256": "7c02e7106e41ada8b9966e58295800992daa97b8ac9d64f3b652675fce5644bd",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-02T0600Z.json"
+    },
+    {
+      "key": "ae085e6a74dcca90fad9223a88b2aa2b8aeb64b06fe934e6826bd321bb8faeb2",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-02T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.776016+00:00",
+      "sha256": "15894215b74510eb01714f92d36a40fdd4a679f2d3312a1669ed3c4c12475214",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-02T1200Z.json"
+    },
+    {
+      "key": "45e7f20b8f2e72af996365e338930eae92f89cf01abd5ca5fb070067048b4cb8",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-02T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.885330+00:00",
+      "sha256": "63fc95d4224c7ec284b742f53f1ab5a80f7d6fbd49b3630623f6d730f656e3fd",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-02T1800Z.json"
+    },
+    {
+      "key": "9b7ed6f16ef1e4ce67df0bfa228cb7e3416914511bf01677ccb2a325188c3dc1",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-03T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:26.994061+00:00",
+      "sha256": "4d3095d529813c06c3faf464666c88035788fa67ac4d629bd8e5dbb5f1b0a138",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-03T0000Z.json"
+    },
+    {
+      "key": "90ea1fdf375beee494cb556881e8ab28ca59af541a9cb22bbb57884ab4d02f3f",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-03T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.106747+00:00",
+      "sha256": "0a0cf11dede17857df881c923867094b1a44f58f585feff099c3887ca8dd833d",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-03T0600Z.json"
+    },
+    {
+      "key": "475447511ff81e31425569a5826fb9c357cf7fbfb553c09c6fb4e29683f1bc8d",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-03T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.214462+00:00",
+      "sha256": "b1cbef90a94f27194169e00b8e9d4e16a9fdc03d9fca5269c7fcff3197d0054b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-03T1200Z.json"
+    },
+    {
+      "key": "1055781a7d186c0bf5703f4602b60ba9ee790125aacea84acc1617b5d05ddeeb",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-03T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.321382+00:00",
+      "sha256": "3a4ec368e200e1362f77ba964196b4c9ea7b4bba83227c90c2aacfe20ea7d0eb",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-03T1800Z.json"
+    },
+    {
+      "key": "468bf64555f6f88679fd675c81d42796d737b3f3e03fc5ae1e4f18a91bea3fca",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-04T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.430132+00:00",
+      "sha256": "1afb7625ad079aaa9e27d3585fd3320425709b8341fc44ffb04a02232d759dd8",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-04T0000Z.json"
+    },
+    {
+      "key": "4de5fa62f7f55f60ce8efc29523cdc337375b1b5f4d92e2e512f71acf2ae29b8",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-04T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.539552+00:00",
+      "sha256": "c3646c45f894fb857714d9d660c3ec8a941b6ab5fb3bd3fefbee0dbc9ff60cc6",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-04T0600Z.json"
+    },
+    {
+      "key": "03d109731b3bc02199467e70623823d6a739560d86ad118f61802b2ae7aaa38a",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-04T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.643516+00:00",
+      "sha256": "ad4fea39d134b5e413a5c45b678f0d5402c266556a3d022e8304ad071694db14",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-04T1200Z.json"
+    },
+    {
+      "key": "dd7b75d333a21367baf24b4e6f3e69b87c6b826a5638502165a57f268d873d5f",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-04T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.746160+00:00",
+      "sha256": "afe8ea4612a30797f236dcc21d7d83c62016ed1cf42566ac46b09d9b3d1291be",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-04T1800Z.json"
+    },
+    {
+      "key": "a0cceee4ad3db5afe63c48f828613ffadd43b6ea3fb94fb609d26b945b4278c0",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-05T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.848277+00:00",
+      "sha256": "162d8de7ae91261236147091f8d0bc727728a62964e7b667b0d8f91794682935",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-05T0000Z.json"
+    },
+    {
+      "key": "8eae11ae4e96a83875f8e8f592d01ff50086a864582926b7e1d29f4c16805d78",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-05T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:27.952807+00:00",
+      "sha256": "b4818144b8508fb2d0df0525bc1c85a9834f611704e48ab9c015a1ecb22b57a1",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-05T0600Z.json"
+    },
+    {
+      "key": "28c35f015ac74321681fd283e76484a6048f5a4383fb4d60e53ed5e165228ddd",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-05T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.058328+00:00",
+      "sha256": "5bc38a2c76da9aedd112393a4ceac20cdbc6040e96146796d167eec20865a3ee",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-05T1200Z.json"
+    },
+    {
+      "key": "5d08c554f107982364580ed19e92bb15c2baa4c919249d229df6f4a1bfd916d7",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-05T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.169850+00:00",
+      "sha256": "12c7d0d5557c7e5a520ee12c4dd7301cc07b8f59b79ff6cee951ff9ce9cbf7cb",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-05T1800Z.json"
+    },
+    {
+      "key": "0f20a0c352717d28fcd5b63f4cf8b37dbebdb53baae226a55d377da00e601245",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-06T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.288172+00:00",
+      "sha256": "aeba562d270116c7e538d378c419b2ed82c1decbc7f202e34544c34ec6fc3a63",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-06T0000Z.json"
+    },
+    {
+      "key": "abdd11183d8ad940634f7041b4798261dd460d70e7e62613a97aa81810b6dbdb",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-06T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.400522+00:00",
+      "sha256": "955a6c88dbdae70949f6ff05bc184acf21772beaae8e5bf2d75ff8f7500624c5",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-06T0600Z.json"
+    },
+    {
+      "key": "eb82d2ee7cc5cceb2bfd5a00add8507110c9f391bfd4b4b65e2800bb868fcf61",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-06T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.518743+00:00",
+      "sha256": "68af7c95f063d384943b1fe09fade9438df638864ec448cb7c1cc94796171a35",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-06T1200Z.json"
+    },
+    {
+      "key": "a52d23b1320b3065c09d83f70aa9805c23b3a1d54bc79b61a2f936bd472a3c4b",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-06T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.629346+00:00",
+      "sha256": "0ec149b4fba6152588ec694b489daf2049ff5db80da7d99070a76a173b7311b8",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-06T1800Z.json"
+    },
+    {
+      "key": "23ca9a8eba9e248835f8729c32bb6ac4414deac0a3ba1e29efa42982a0f8be27",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-07T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.733928+00:00",
+      "sha256": "5bba4caedc3dd4352e7926d66cdea15d5b8c1555688074242225c52aec3dbece",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-07T0000Z.json"
+    },
+    {
+      "key": "4f66c4f34586ea5b5f5901cb4fcfa0e061dc806701754f4018eac9a01507d486",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-07T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.842905+00:00",
+      "sha256": "dfd6cb07cd3c8996ff8a557f1431790a3339a9b56cdcf1b884eadee8d56b95f3",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-07T0600Z.json"
+    },
+    {
+      "key": "0a9c31ffe95f00d84203d5d39489aba3f68ebf9aa7829f62b0719d513cda6611",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-07T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:28.949355+00:00",
+      "sha256": "637cdc6e8089901f46a8ed8f5e2e5eff4652ff0142cbee0d5c0b205682cfb5f0",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-07T1200Z.json"
+    },
+    {
+      "key": "231c42fa799e5f135b3b281de765d2668eb0eac8f86690f01d8ddfc50f4f41bb",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-07T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.054348+00:00",
+      "sha256": "b06e430ec328db5bb9a2b6262fb972acd56f5053fd86a15300484395d2a5e2a3",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-07T1800Z.json"
+    },
+    {
+      "key": "45751c31cabb7ef88abd012a5f64204cb8225f04a076b6e7bfadbde0b310faac",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-08T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.164517+00:00",
+      "sha256": "d59a7ad25484da6a2cdc00d8ceb19f50576b609494b6aebc01b412349bce925b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-08T0000Z.json"
+    },
+    {
+      "key": "d8b270d859dc3a3a8e091cbff707a7a9820cee2c18a2762b40767ff6c308578e",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-08T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.278138+00:00",
+      "sha256": "21296e9fbe6c6e43dc8febbafb7a097f5cc0e7df82473f3c9ba00648e8feec94",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-08T0600Z.json"
+    },
+    {
+      "key": "e786ae462fc5cf14695fcfeed490ecc8635256a308846e3201e1bf465d8b2044",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-08T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.389690+00:00",
+      "sha256": "d28abc388a6f2abe76f7466cf7adf847fe82569cd67e023cd5a4281c2a0764e4",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-08T1200Z.json"
+    },
+    {
+      "key": "d325825272a5278f81733e5433384b26c3a3e2c455f60d837b1cb159e8dafcbe",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-08T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.496032+00:00",
+      "sha256": "24eeefa67d271db8549e666355c7bc343672564919cf70710c489d342a883b2a",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-08T1800Z.json"
+    },
+    {
+      "key": "e81c829010738877cbebc6456c2cc41d34c77e0bf6b291ef62135dc43f99df74",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-09T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.605572+00:00",
+      "sha256": "a4d0dc21e413c558ae7f97a86c524cf52ac0a44453b8c3331821940e5e12d116",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-09T0000Z.json"
+    },
+    {
+      "key": "96649cdffcdc6d8b3ebf0c9294487cad5b15185819a023be1b9efcfc862a3c5f",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-09T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.710713+00:00",
+      "sha256": "43298800c8328941848e314fc8f5d6b89fe7a668aa42242cb52cb25db0546e44",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-09T0600Z.json"
+    },
+    {
+      "key": "afe21315161465cc47dd2143ef8bbcca028c42b55d3a849727ae1dc726752bfd",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-09T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.811615+00:00",
+      "sha256": "ef88e1d45b6e296e4316c4325869e3511d2730199f4c71bb3060cbea79cffc4f",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-09T1200Z.json"
+    },
+    {
+      "key": "89c53d9b2f87d2ce120da0769a1b62970c597aaf9463acb278372f10b8428f16",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-09T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:29.915571+00:00",
+      "sha256": "42cb9aa2c23a47f293a963174b832c8b7e49c2fa18b72aa03993e3bc733b8c2c",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-09T1800Z.json"
+    },
+    {
+      "key": "052a5b1a7519d8a782612b9a81feb7ccf860a06c3041c3185db8630afd057b7b",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-10T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.019144+00:00",
+      "sha256": "12efdb5a7f99ae0bb99a9fb271422be9a59dd61ebcc137369a7755c2b69ce42a",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-10T0000Z.json"
+    },
+    {
+      "key": "63421dbd6ec4c485affc66069ad84dfce0ea6ed09a65142865dbce1dc36d2398",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-10T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.123498+00:00",
+      "sha256": "ed77f7c591e70c53aa65d317ab2a280fb36f1fb4b826bee09228141d44dd229b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-10T0600Z.json"
+    },
+    {
+      "key": "394d71b458c3ba91cd2487e2b81068fe9333a981f106d30586f484394bae26cf",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-10T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.227992+00:00",
+      "sha256": "c1ae59ed7a2806739021a2ca261a8ebc902b7c28f9a6f62b0258e4a2d24cd82e",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-10T1200Z.json"
+    },
+    {
+      "key": "f3aa3af3aedc301ca8d8a5a3d3182435a712e28a293b179fc73b1a099bd97bc5",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-10T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.337836+00:00",
+      "sha256": "b9cab989635dfa6de83d216a3e62453417fd694df9226cd90a424e8c831f00d9",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-10T1800Z.json"
+    },
+    {
+      "key": "18714f1a512dfe2f26753e377057be0f806d9d26b8b24ba0f3e0efe0a7045a44",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-11T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.446820+00:00",
+      "sha256": "e36bc9075079f2ba4652b71b8a987b4d91ba97553deb4afa2b293b719dd83da0",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-11T0000Z.json"
+    },
+    {
+      "key": "cabbe0549df253dbc473fee4c0ae99df2e7dd3cc571cc5b5877cc84a73d610b5",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-11T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.552180+00:00",
+      "sha256": "94a94944e51f99849dc40fdfe1388eba52cf7f2825900e726fae1d34e7ce1897",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-11T0600Z.json"
+    },
+    {
+      "key": "38012956641f968ecea32d933eda02c258769e72438e0c9fa493d7e681d878c8",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-11T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.657552+00:00",
+      "sha256": "008ea89986986b24561913a30ff404a4eb54533d61cf71ff4d106b636f306a32",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-11T1200Z.json"
+    },
+    {
+      "key": "b85689331ffc80d01a1e1156620dac07965e38fcaf0fe7ed251b93a8c8f35258",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-11T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.763459+00:00",
+      "sha256": "3188451e5ce30d9e27e2a8d9672084b5514c98191015596ab766badb12d765f3",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-11T1800Z.json"
+    },
+    {
+      "key": "cc4d3501bc9b22638a64e581a91ee0233bda991014c39b233c877453919b601f",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-12T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.874985+00:00",
+      "sha256": "f9ea49d9bcc9593fb4f5ae73464ac9bbc17d6cc2e956e930d25006903f013660",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-12T0000Z.json"
+    },
+    {
+      "key": "e55b3c4aa678e18c63817459ff6ce7943062c4b06f38d1596b31125499a74c3a",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-12T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:30.976364+00:00",
+      "sha256": "92e6901c9a134ef9585f933e5c8cce686d58437609e507b21ea8acd0cfdc1b70",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-12T0600Z.json"
+    },
+    {
+      "key": "5c0ea7605352c6115f8369ba0a20d3dedcfd3acabc2752f077912654994597f5",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-12T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.079888+00:00",
+      "sha256": "bd6f292e8e51a9fefc4382d71cbec113cc301e72e492d61f8852a9dae5f1f66b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-12T1200Z.json"
+    },
+    {
+      "key": "14d2d9c38254008cb690578369a4b59df09b1df8984f0a4658eff1aca1bb8e2f",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-12T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.185319+00:00",
+      "sha256": "30d4e198dc52dc1070bd4adc9349f3145407385cf9005171a6e2821c19f8abd7",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-12T1800Z.json"
+    },
+    {
+      "key": "ddf61803d664678d902a7baae95b392933ff79d4be2a85692335ae9580d3034b",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-13T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.288204+00:00",
+      "sha256": "9e03f702f2247a045e18910bcb403ce5296e80e8c269850b3282827ffa9dd142",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-13T0000Z.json"
+    },
+    {
+      "key": "eeb7fc2a0ab73dd03470a6360e9e006a77c8be634870d97de159bdb712a8e9aa",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-13T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.391432+00:00",
+      "sha256": "bbf644c5a722c12d9fb0d32e854d98d1f8c59c1f4f3ef68c568bb61f87db1e60",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-13T0600Z.json"
+    },
+    {
+      "key": "54bcbb5bec74b46f0113dc1e8a3419a76b683989910cceadd13bbe086c78b18f",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-13T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.498226+00:00",
+      "sha256": "a58e614f16c7492ed06d95fb38963a1b4b11df052c356f29dc40d47ae50a7851",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-13T1200Z.json"
+    },
+    {
+      "key": "51bc3985911370ef04e12b916af1b524073ebaaa4f7860f60718bd4149a8f3d4",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-13T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.611737+00:00",
+      "sha256": "32c43d2aed7c021c3678e677840a279f2fa1637803f176c10966bd4e6dab0fe1",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-13T1800Z.json"
+    },
+    {
+      "key": "fdf4721d763d2b5e8da064f0111d0910866b253801eec1f3a1f79a7f6c12c013",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-14T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.719620+00:00",
+      "sha256": "629796e9c962b38a62cdbdcf0ba1ba6a4b884f0f8ac1eef63c86083af5fce705",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-14T0000Z.json"
+    },
+    {
+      "key": "f2128b562bf20fcaa47ab950ce83ff760cb4411a4121e057a0df414deefd7dec",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-14T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.825448+00:00",
+      "sha256": "782fe373e7d56a1591cb0cc40c2f18ade0bfe8a5f7b054a025117da6a9fc2553",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-14T0600Z.json"
+    },
+    {
+      "key": "60c250a8fc29f92195173999e57e9a12780de5e83ba53dda1d9209c653f2c765",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-14T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:31.928237+00:00",
+      "sha256": "96baa990a32cddf68e5add15bbeeeb279a3887a6e0629995c530d59bbfca3bb6",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-14T1200Z.json"
+    },
+    {
+      "key": "cebab360c06b34481c50901fc8058cd93d096c67e8350de4e28d05469dd92670",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-14T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.042579+00:00",
+      "sha256": "e88cc2f9298368d9f639a502376b80249100b2f8b7f690da5a41dc377ee53908",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-14T1800Z.json"
+    },
+    {
+      "key": "0f987fbdf0a3ab0dc3916c5f8eae3037be05a9c5c593354ec744938044f2d3ab",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-15T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.147428+00:00",
+      "sha256": "b32ff4bb10d6f4ad9e18e52b29c213cecc68fe15b3d7be6c344d6a67b964807a",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-15T0000Z.json"
+    },
+    {
+      "key": "ced359fd175edce55539e13d78c541b28d7865ff4d4deb799a6e2edc4e85d64b",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-15T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.256272+00:00",
+      "sha256": "b27fb1792d4fb5f5e68ae9e16f82a3f8156ca02e2309857ed077c377d4a8756e",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-15T0600Z.json"
+    },
+    {
+      "key": "9ab129c5f83675218e7b26a2e4d7c44bc7d08d86d6803846f5f97446c27b9242",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-15T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.358911+00:00",
+      "sha256": "4467d93bca7e1f2b75d84523ed30f4e158db5f73d669dbfbe0ddbfd841d45cdb",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-15T1200Z.json"
+    },
+    {
+      "key": "f4e7c1270238baa3d5fc1a02cc3ae16830ff91182aa88212434f4c17210e4798",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-15T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.461090+00:00",
+      "sha256": "0b7f093335c207df9afdab1e3494c292b8930e6d86a0c85ec6e1e7a117ddd85d",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-15T1800Z.json"
+    },
+    {
+      "key": "c816e031613379fb1e36e346b1a049ff1ad5bbefe73b062aa8c72bb26ec00fc8",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-16T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.566630+00:00",
+      "sha256": "4ed6baef748cd9258c2a8cb82fe919dab872964a52d9cec0183c631a8457455d",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-16T0000Z.json"
+    },
+    {
+      "key": "e27230f63bb436b7dad5a8af25cfeac26a8614da0282d9c12168b6891f512b59",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-16T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.672227+00:00",
+      "sha256": "6f66417466c1ed11f4d3a1752e4cb60fdddea8868a7e05f31d0e89221944fe87",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-16T0600Z.json"
+    },
+    {
+      "key": "00644d3cbcd6135aa3f87bb7ea10121e112d7dc97343f676b1379eef42d2d258",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-16T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.778369+00:00",
+      "sha256": "e20d13100b8cbc0184c6152b32b059eaad133e7684dd66bde793a948d08862c5",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-16T1200Z.json"
+    },
+    {
+      "key": "cd488f37c0e37c295350e922c9f3024b9cb3e318713e0a410a1be08e30ba721a",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-16T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.882381+00:00",
+      "sha256": "80aef426d8dae43501fb4214ef70f95e33e6bb6f21165f638cfdf2844827bf2f",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-16T1800Z.json"
+    },
+    {
+      "key": "619d1b57e5ba0627c8c488f177bf66bcbdbb451282c9f5c5275dde15121c39b1",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-17T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:32.987042+00:00",
+      "sha256": "42c51689f7f9eab0fdd9f659b86b5dc11799e4610040cd2245f111e12f0d28cc",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-17T0000Z.json"
+    },
+    {
+      "key": "eeffc17469b500b9e528c595152e1b840fb2f2a259ba9691517781abd1292373",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-17T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.087809+00:00",
+      "sha256": "c4619162e25e688522b2af460c554058178de1f018bd5245f1088a0523fc0d47",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-17T0600Z.json"
+    },
+    {
+      "key": "4f522fa4a9fd3e77cf491a140826bc4d39a2aabc388f7bc914b5a81aa644104b",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-17T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.193463+00:00",
+      "sha256": "32fa388e23fdb6217275a2f21d1ba9a2f1dd3d360c30f9147cfdd2914a182148",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-17T1200Z.json"
+    },
+    {
+      "key": "9df333b0c06271ffa14b71f7e0e6bc39368d27772442abb2a3de7ed1f0d67208",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-17T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.299831+00:00",
+      "sha256": "780274ba3ec0d5985fd3af76b6d296cbcd98b16fa0794f72e5a70974913cacc5",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-17T1800Z.json"
+    },
+    {
+      "key": "01f90c7e9e8d8bc3ab7d7cf826cd27ae193b5488b1d1334068123191e5619996",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-18T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.406097+00:00",
+      "sha256": "4c8af6811ba5af060035dcac3a41f791ba774bf154ab9682d4b4748bceff0a9b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-18T0000Z.json"
+    },
+    {
+      "key": "97f36d3def0b87e0e29b43ad6ad6aebc21a8e6490217673b7f0f852282174891",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-18T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.509492+00:00",
+      "sha256": "639b41f3087c36ef99327e699baac6a83b68f90a2cfa41d0a76d6f820f0169c9",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-18T0600Z.json"
+    },
+    {
+      "key": "c06c376a9f2e4793b9d6b113924fe714195e36cd6165369c5a058d5d32bdcae6",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-18T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.612668+00:00",
+      "sha256": "066e61e87c2b577e29a1fcea2405839250af40dedc92922837e115e6d5de113d",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-18T1200Z.json"
+    },
+    {
+      "key": "a1aeb580b8263e0e11da64a00f2bacdcaeeb35f0fd41a91990520ac3f6025742",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-18T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.716715+00:00",
+      "sha256": "f15507536d0f783556dc459d1c6cb06b3f67b43c4633a93d51d338167a4b3240",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-18T1800Z.json"
+    },
+    {
+      "key": "9af94a25580cd9aec5a05a08a8d1be02e86e8a6c04f717d3eb0fcf098fc77480",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-19T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.822627+00:00",
+      "sha256": "1a2ff3bf596800f4e5ef3136560d5395324d0c0944e58e2e42595dea9c052278",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-19T0000Z.json"
+    },
+    {
+      "key": "539cae029d3da2a5a0c7da9f5bcaed58e3fbb1e1f189d91941996ae400cfb044",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-19T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:33.931209+00:00",
+      "sha256": "15a16602fe4d88245318322c6a89dd8fb52067faab8f9b3ec3c88f61587c4537",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-19T0600Z.json"
+    },
+    {
+      "key": "bd830087b67cdc76ce97a144bb728ca648043ec9cc0bc2efbffafbb5567d56fa",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-19T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.034384+00:00",
+      "sha256": "8d1d3d8fe0e2d5cdd58a5421292c4a849763f8bda4b948540981ada3c72c3693",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-19T1200Z.json"
+    },
+    {
+      "key": "f1b7226ac9dcbaee84f7fcb943012e0878dc7f4266ee3652607e464f49956bfb",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-19T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.139352+00:00",
+      "sha256": "7fc47bdd0482527cc691836223f6a1f9b27dd7d406244913699e888fe761c474",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-19T1800Z.json"
+    },
+    {
+      "key": "fe2e3a24b099fbb0a429a8bd38ff0c3ccee5e915bd80b1441cefd6b58f054f44",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-20T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.242719+00:00",
+      "sha256": "2a10e068d125ee34f5f413077636040457c6842f581a25686dd9c96db0ab0056",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-20T0000Z.json"
+    },
+    {
+      "key": "77db001c96a7b7212a4ec0344b52ceb9a45aad3079f1f595fdb61c94e441a441",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-20T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.345291+00:00",
+      "sha256": "4d3c5387917cf6af7a3b03bb8750864dc8422d92919b5c1fa93d23508baf00d7",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-20T0600Z.json"
+    },
+    {
+      "key": "e787a37792d0f53620b951bd894ad3a0834bb8c7f3c0b7e0782725faeb077c52",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-20T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.447494+00:00",
+      "sha256": "6807e4ab66248b33e9e356a52497c6feb26108463653e3a475aef53684152dfc",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-20T1200Z.json"
+    },
+    {
+      "key": "278cef771ce4fccec6649719c7d2d1210aa7b11dfa8304e6213b7d4c411440a1",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-20T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.551194+00:00",
+      "sha256": "d926e6eea1cbbb7981e6fcf5badbd23c60b39821c5896916fd7820062b0a302e",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-20T1800Z.json"
+    },
+    {
+      "key": "2e01d20413bd202a956ba5dc16fbf50d7cb097c33a364dc32b53662eb57c77e7",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-21T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.654437+00:00",
+      "sha256": "1a9d341e5762bcb92b3c814744e4edc59367a28ed076e0de5e7e55976a9f3b93",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-21T0000Z.json"
+    },
+    {
+      "key": "4c5cf7b26fbdee75606568453f68efb8d203ce7441d5268565ce2a80ef9d652e",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-21T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.758879+00:00",
+      "sha256": "cb09b1600994c5342f12123826c17b9a671688db27da0f661ec17f4b379656c9",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-21T0600Z.json"
+    },
+    {
+      "key": "b6639ae29cb40dfce1e88b4c2917fee82dd65644b78dbfb7fa55db1da6439383",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-21T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.872148+00:00",
+      "sha256": "4fe5439224d9b31e88f4b3e2e0414937185aa8944968addfba1504a3b83b7d5c",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-21T1200Z.json"
+    },
+    {
+      "key": "133e672cd724a84fd0428786e9eb14ab2dde22e4bd082976f58421c243758c30",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-21T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:34.982840+00:00",
+      "sha256": "3a732bd2b4a33bf506a733b4fa00ffb7caa35f82842605a291cc722fe0e5484b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-21T1800Z.json"
+    },
+    {
+      "key": "78a290781779d8b3c2aa9251e24ff63c5e1311fe4f9e092362447ffc1844553a",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-22T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.084724+00:00",
+      "sha256": "1b398a7c74b4aa53231810b7015574ecac09bb1df56b40442241b1afc27d991b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-22T0000Z.json"
+    },
+    {
+      "key": "195da3682baf2508ed7561f5c008b54bf3a2151637da7a4564e7f2c52bd2057a",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-22T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.188253+00:00",
+      "sha256": "22a15f903d87c7261f5a03cfcbe2d5da52d13ba7aaa8dbc0951ba65187e78c26",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-22T0600Z.json"
+    },
+    {
+      "key": "f4c18b5f82de603572667f7440fdbe5992cff335134eb6e6b2690d5f5e67f79a",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-22T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.291775+00:00",
+      "sha256": "4b6dd7b54a4020a5b2fb88843aea43b4d1b75c063f076daa246b13827ca14c8a",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-22T1200Z.json"
+    },
+    {
+      "key": "667ab07336b1ee47e1944d7edf8949539a36dc298a2e8fb39c747c88386b7ee1",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-22T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.395562+00:00",
+      "sha256": "9c9312d36201f9b47cfe6025888521f7c4610b4caa1a42a986f7ac6a343b474d",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-22T1800Z.json"
+    },
+    {
+      "key": "5305f419abbf0d6f0c56c40263ff7aba556b47811586e4e0140e3404a3e7d464",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-23T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.497200+00:00",
+      "sha256": "a1be152db20f1c8fe05661c74644124dcd8655be4c03e6d6456882304fa749b9",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-23T0000Z.json"
+    },
+    {
+      "key": "ec4ff6c6bd1bce70bbdd4441cb4cdd54f1d16ab14e1661d53965e3deff0bce5b",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-23T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.601015+00:00",
+      "sha256": "06927201de68b4b689340b149b1ba93bfb61d4d3210ff8746eb7e8401f08e295",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-23T0600Z.json"
+    },
+    {
+      "key": "ad42b714ec8ff91500312f6ef634af55ab3e3179eaf2b2e064ae37c989c8ca0f",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-23T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.706715+00:00",
+      "sha256": "ce86580de2bc8404d2df5af3309fd4911828f627ac638828834f88c75c3d76c7",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-23T1200Z.json"
+    },
+    {
+      "key": "a89f2c438ac24c1631df7e55119965c17eb9b96a89357e12978f4a278d4a941d",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-23T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.819393+00:00",
+      "sha256": "a30eee1ae399616b4339262b822e3518df0a723a922ff2f67f744798c14645ed",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-23T1800Z.json"
+    },
+    {
+      "key": "644f6a7d52b051ea67798a1069f7d03925f6b88810b5eba61481742e4642ca18",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-24T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:35.929986+00:00",
+      "sha256": "63061bacbd5f04f5a8fd6dc44f8dde877c317040eecafd9a4aed134a0a9f86d3",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-24T0000Z.json"
+    },
+    {
+      "key": "6f7ddd9b116e374c0cacc7bd1acecc227ef25aa3c6a39d798cd6d7b78717cfc8",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-24T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.047900+00:00",
+      "sha256": "af1a3d8ffafdfd1d1df445ed5713e52a73cde342768633b1549c2be07cc03921",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-24T0600Z.json"
+    },
+    {
+      "key": "d288ecfde5d1cb20e41ea86171e1c6dc787a0a560097179ad132cc3b56e59d0e",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-24T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.153018+00:00",
+      "sha256": "90d35f740f5e682afba20f7cbe24b65a6149e565a44c49c1da01315cf2cf2cc3",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-24T1200Z.json"
+    },
+    {
+      "key": "85f2b4c3e9d22f7bec7323fd21d0174e51199f103be715bf84d0dc2b264e155d",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-24T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.258824+00:00",
+      "sha256": "6994677554aee79d020ce729127e0da7745708694caafb8da9cc62a5294ef6ee",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-24T1800Z.json"
+    },
+    {
+      "key": "1992f0b442d20227d60d192cabd8513baf04c52f0b1678731f507f2ecd9dc417",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-25T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.361307+00:00",
+      "sha256": "894943ed6a78445c285e37e65180fd18a5cbe25b39b532f6fe0f5806868fd63f",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-25T0000Z.json"
+    },
+    {
+      "key": "c3a357f5e66b147c3f8f3b61beb5068b03c9a1c4ee69094c1d40638a14e70c7b",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-25T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.466977+00:00",
+      "sha256": "a44344aa0b41d63fe49567d100a8109f735845b4947471147c6c3e246e667599",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-25T0600Z.json"
+    },
+    {
+      "key": "926d5fde6e268f32bbf57565672fbb498872a72df1c578763a5f250e2c972be2",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-25T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.569801+00:00",
+      "sha256": "2209fcd9e387cf40fb92a1552bad82ff78418e5f3ae7c071fe44a6e80e265a72",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-25T1200Z.json"
+    },
+    {
+      "key": "91f0a435c75cf2e2127f1059be6a763f59e417b789f04b2ec79acbd72d5204af",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-25T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.677810+00:00",
+      "sha256": "6d13ae7aac3d64bd473116be22095fdf779fed24a1ba4a4419e165afc93a0c9b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-25T1800Z.json"
+    },
+    {
+      "key": "0e7cfe6c7474b964fe0496c4f98053204de5a489e5e21c78e53aab4acb4442e3",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-26T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.789552+00:00",
+      "sha256": "1cafcae687bbd0a5db1f694c0c7eae69478943334478a9dabe1844559e1822f2",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-26T0000Z.json"
+    },
+    {
+      "key": "d70ec3efe10ed84c0d85f6d61464ddcc25c59afe7e6097ae3f2f2830c87ce103",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-26T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:36.904046+00:00",
+      "sha256": "387787abf346f81ca3c2375395008a3eaa20a79b883580de51f74abbd8c84039",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-26T0600Z.json"
+    },
+    {
+      "key": "e5b36eea5d852232908aed63cdf134760e86f51d6dcb34cd6e926a29cfa02ede",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-26T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.028653+00:00",
+      "sha256": "90e9e4fc67f61b100d826faa7177f50a61d516d94eff988be98e82abdaa529c4",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-26T1200Z.json"
+    },
+    {
+      "key": "7facf282bc913e13feb297d6bd868ecd426f43ebe61f5638ab5140c5045d0442",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-26T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.143448+00:00",
+      "sha256": "91540cbf969f527ec5e679ddf00b7636b8a39576075c780806081232451c94c9",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-26T1800Z.json"
+    },
+    {
+      "key": "e74e5b8aa99f24f53e79d95599f5b2f57eec3c2f6e76b58ec1befc21af838057",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-27T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.252798+00:00",
+      "sha256": "a844d29715c8dbb854cf7523325d421e94c84c9e71c8e2babd64beb429b96e5f",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-27T0000Z.json"
+    },
+    {
+      "key": "6be4ca2b5c01e610e20992c9d47234c1f6375196704f689cad58e7b558c0b0de",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-27T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.361914+00:00",
+      "sha256": "7674ddc5dcf3a0de30faad6ce6edbc70159e200ce7194ca9939b33c1046676e8",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-27T0600Z.json"
+    },
+    {
+      "key": "627f94396ebcc13b872242e9cdf1ce7c98758063a30c2fda9a13bbda61d0f5fc",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-27T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.473218+00:00",
+      "sha256": "c468992d3f94e86868802e10dbc99cc6974608226ff806b9c32a7d7d9b0f2902",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-27T1200Z.json"
+    },
+    {
+      "key": "b45c782a6f07fafa92b48bedbc367495509f3e37d451a18ae0beca5296a0d41e",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-27T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.584043+00:00",
+      "sha256": "3d4d6389c97f63325c6c5059af59e06cc42b7e26be265fe4ce560a70bdb12f68",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-27T1800Z.json"
+    },
+    {
+      "key": "dc40ed8876820f1267db938395a90c99a720459eb2a1d9ce4f1cc6f352d9e940",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-28T00:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.704964+00:00",
+      "sha256": "9a51ffa11b115c19b54aa3a6b91f74f945f86038e11113ba1d830d60ee587158",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-28T0000Z.json"
+    },
+    {
+      "key": "944413d3cd6b5b4bcd095044328a3101ea7f42147515d4870fa2b73d02ffa402",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-28T06:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.809755+00:00",
+      "sha256": "c3987223c8c2840dbc61f22d276b957f46b803cb7784921a5b51b2ca748af47b",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-28T0600Z.json"
+    },
+    {
+      "key": "85caf13442cd261bab2e8b2ea59208585195aa4282a12a0c1117f85e544562d1",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-28T12:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:37.913819+00:00",
+      "sha256": "1a0d0d53402568f530c5f55f1bd37ad724c20da4d2e79c032ed61474c7467758",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-28T1200Z.json"
+    },
+    {
+      "key": "f495c2df1957b30acb92fd860588ac4b6854142bebd24247e2bbb57e7f5abb6f",
+      "url": "https://single-runs-api.open-meteo.com/v1/forecast",
+      "params": {
+        "latitude": 43.64515,
+        "longitude": 78.535604,
+        "run": "2026-02-28T18:00",
+        "models": "ecmwf_ifs",
+        "hourly": "wind_speed_100m,wind_speed_80m,wind_speed_10m,wind_direction_100m,wind_gusts_10m,temperature_2m,surface_pressure",
+        "forecast_days": 4,
+        "timezone": "UTC",
+        "wind_speed_unit": "ms"
+      },
+      "fetched_at": "2026-09-23T10:21:38.016130+00:00",
+      "sha256": "051cb1f00729fe4803cc1134b65b1e83c97e52873f7a9379fdf225d3a8b8a695",
+      "grid": {
+        "latitude": 43.620384,
+        "longitude": 78.47891,
+        "elevation": 555.0
+      },
+      "path": "data/nwp_cache/single_runs/ecmwf_ifs/2026-02-28T1800Z.json"
+    }
+  ],
+  "weighted_calls_per_uncached_request": 1,
+  "weighted_calls_source": "https://open-meteo.com/en/pricing",
+  "source": "Open-Meteo / ECMWF IFS; CC BY 4.0"
+}
