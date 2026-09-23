@@ -1,4 +1,4 @@
-.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train backtest backtest-v0 backtest-dev
+.PHONY: setup verify demo llm-replay dashboard dashboard-build docker data train train-v1 train-quantiles backtest backtest-v0 backtest-dev
 
 setup:
 	uv sync --frozen
@@ -36,7 +36,12 @@ backtest-dev:
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent backtest --window dev --llm scripted
 
 train:
+	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent.model.quantiles
+
+train-v1:
 	OPEN_METEO_CACHE_ONLY=1 uv run --frozen python -m windagent.model.v1
+
+train-quantiles: train
 
 # LOC-8 adapter remains separate from the LOC-10 training command.
 data:

@@ -19,14 +19,21 @@
 
 ## LightGBM v1 (LOC-10)
 
-`make train` офлайн собирает lead-aligned признаки из явных ECMWF IFS Single
+`make train-v1` офлайн собирает lead-aligned признаки из явных ECMWF IFS Single
 Runs и leak-safe Previous Runs, обучает pooled-модель T1/T2 и сравнивает её с
 v0 на Feb 2025 и Jan 2026. Результаты, срезы h1–24 / h25–48 и feature
 importance: [docs/research/lightgbm-v1.md](docs/research/lightgbm-v1.md).
 
+## Квантили LightGBM (LOC-11)
+
+`make train` обучает P10/P50/P90 и отдельный mean, строит reliability diagram и
+проверяет coverage/pinball на тех же честных holdout. На Jan 2026 coverage
+P10–P90 составляет 84.7–85.7%; P50 выбирается для MAE, mean — для RMSE.
+[Полный отчёт](docs/research/lightgbm-q-v1.md).
+
 ## Технологии
 
-Python 3.12, uv, pandas/pyarrow, LightGBM, Pydantic AI, Open-Meteo Single Runs. Числовая v0-модель — MOS к ветру + эмпирическая логистическая кривая мощности; LightGBM v1 использует те же as-issued выпуски и вторичные Previous Runs. Архив 116 февральских ранов, 31 dev-ран и HTTP-клиент Ramazan описаны в [документе погоды](docs/03_WEATHER_ARCHIVE.md) и [бэктесте](docs/research/backtest-v0.md).
+Python 3.12, uv, pandas/pyarrow, LightGBM, Pydantic AI, Open-Meteo Single Runs. Числовая v0-модель — MOS к ветру + эмпирическая логистическая кривая мощности; LightGBM v1 и его P10/P50/P90 используют те же as-issued выпуски и вторичные Previous Runs. Архив 116 февральских ранов, 31 dev-ран и HTTP-клиент Ramazan описаны в [документе погоды](docs/03_WEATHER_ARCHIVE.md) и [бэктесте](docs/research/backtest-v0.md).
 
 ## Установка
 
@@ -94,7 +101,7 @@ make verify
 
 ## Данные и модель
 
-Входные CSV — в `task context/`. SCADA-пакет LOC-8 — `windagent/data/scada.py`. v0 калибрует линейный MOS и эмпирические интервалы на ноябре–декабре 2025, затем применяет модель к архивному прогнозу ветра. Для v1 адаптер `windagent.model.v0:predict_power` заменяется контрактом LOC-12 без изменения схемы issue.
+Входные CSV — в `task context/`. SCADA-пакет LOC-8 — `windagent/data/scada.py`. v0 калибрует линейный MOS и эмпирические интервалы на ноябре–декабре 2025, затем применяет модель к архивному прогнозу ветра. Адаптер `windagent.model.v1:predict_power` использует контракт LOC-12 и модели LOC-11 без изменения схемы issue.
 
 ## Результаты
 

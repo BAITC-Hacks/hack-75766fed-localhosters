@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 
 from windagent import clock
-from windagent.eval.metrics import by_lead_block, mae, skill
+from windagent.eval.metrics import by_lead_block, skill
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNS_PARQUETS = [
@@ -67,14 +67,17 @@ def load_model(name: str):
         return predict_v0, params["model_version"]
     if name == "v1":
         from windagent.model.schema import build_features
-        from windagent.model.serve import load_model as load_v1
-        from windagent.model.serve import predict, previous_runs_archive
-        booster, meta = load_v1()
+        from windagent.model.serve import (
+            load_quantile_models,
+            predict,
+            previous_runs_archive,
+        )
+        models, meta = load_quantile_models()
         prev = previous_runs_archive()
 
         def predict_v1(nwp, issue, turbine):
             f = build_features(nwp.reset_index(), issue, turbine, prev)
-            return predict(f, booster)
+            return predict(f, models)
         return predict_v1, meta["model_version"]
     raise ValueError(f"unknown model {name}")
 

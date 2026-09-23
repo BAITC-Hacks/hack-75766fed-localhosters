@@ -1,8 +1,8 @@
-"""LOC-12 serving for the LOC-10 model: predict(features) and the agent adapter predict_power(request).
+"""Stable LOC-12 serving contract backed by the LOC-11 distribution models.
 
-    models/lightgbm_v1.txt + models/lightgbm_v1.metadata.json (written by `python -m windagent.model.v1`)
-    p50     = v1.predict: 0.4 * LightGBM + 0.6 * v0, clipped to [0, 1]
-    p10/p90 = interim until LOC-11: v0's empirical residual quantiles per p50 bin, around the v1 p50.
+    models/lgbm_q_v1/{p10,p50,p90,mean}.txt
+    p10/p50/p90 = non-crossing LightGBM quantiles
+    point        = P50 for MAE, conditional mean for RMSE
 
 Agent: `--model-adapter windagent.model.v1:predict_power`. Previous Runs come from the request
 ("previous_runs", long form of data/baselines/previous_runs_ws100.parquet) or, offline, from that
@@ -19,7 +19,7 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 
-from windagent.model import v0, v1
+from windagent.model import quantiles, v1
 from windagent.model.schema import FEATURES, PREV_COLUMNS, build_features
 
 PREV_ARCHIVE = v1.PREVIOUS_RUNS_PATH
@@ -46,22 +46,57 @@ def load_model(model_path: Path = v1.MODEL_PATH, metadata_path: Path = v1.METADA
 
 
 @cache
+def load_quantile_models(
+    metadata_path: Path = quantiles.METADATA_PATH,
+) -> tuple[dict[str, lgb.Booster], dict]:
+    """Load and schema-check the four LOC-11 boosters."""
+    if not Path(metadata_path).exists():
+        raise FileNotFoundError(
+            f"MODEL_NOT_FOUND: {metadata_path} "
+            "(train with `python -m windagent.model.quantiles`)"
+        )
+    meta = json.loads(Path(metadata_path).read_text())
+    models = {
+        name: lgb.Booster(model_file=str(quantiles.ROOT / relative_path))
+        for name, relative_path in meta["models"].items()
+    }
+    expected = set((*quantiles.QUANTILES, "mean"))
+    if set(models) != expected:
+        raise ValueError(f"MODEL_SET_MISMATCH: expected {sorted(expected)}")
+    if meta.get("features") != FEATURES or any(
+        model.feature_name() != FEATURES for model in models.values()
+    ):
+        raise ValueError("SCHEMA_MISMATCH: quantile models use another feature schema")
+    return models, meta
+
+
+@cache
 def previous_runs_archive(path: Path = PREV_ARCHIVE) -> pd.DataFrame | None:
     return pd.read_parquet(path, columns=list(PREV_COLUMNS)) if Path(path).exists() else None
 
 
-def predict(features: pd.DataFrame, booster: lgb.Booster | None = None) -> pd.DataFrame:
-    """features[FEATURES] -> DataFrame[p10, p50, p90] on the same index, p10 <= p50 <= p90."""
+def predict_distribution(
+    features: pd.DataFrame,
+    models: dict[str, lgb.Booster] | None = None,
+) -> pd.DataFrame:
+    """Return P10/P50/P90 plus the conditional mean on the input index."""
     missing = [c for c in FEATURES if c not in features.columns]
     if missing:
         raise ValueError(f"INVALID_INPUT: features lack {missing}; build them with build_features()")
-    booster = booster or load_model()[0]
-    p50 = v1.predict(booster, features)
-    params = v0.load_params()
-    idx = np.clip(np.digitize(p50, v0.BINS) - 1, 0, len(v0.BINS) - 2)
-    p10 = np.minimum(np.clip(p50 + np.asarray(params["resid_q10"])[idx], 0.0, 1.0), p50)
-    p90 = np.maximum(np.clip(p50 + np.asarray(params["resid_q90"])[idx], 0.0, 1.0), p50)
-    return pd.DataFrame({"p10": p10, "p50": p50, "p90": p90}, index=features.index)
+    if models is None:
+        models, meta = load_quantile_models()
+        calibration = meta.get("calibration")
+    else:
+        calibration = load_quantile_models()[1].get("calibration")
+    return quantiles.predict(models, features, calibration)
+
+
+def predict(
+    features: pd.DataFrame,
+    models: dict[str, lgb.Booster] | None = None,
+) -> pd.DataFrame:
+    """features[FEATURES] -> DataFrame[p10,p50,p90], preserving the index."""
+    return predict_distribution(features, models)[["p10", "p50", "p90"]]
 
 
 def nwp_frame(request: dict) -> pd.DataFrame:
@@ -74,11 +109,19 @@ def nwp_frame(request: dict) -> pd.DataFrame:
 
 
 def predict_power(request: dict) -> dict:
-    booster, meta = load_model()
+    models, meta = load_quantile_models()
     prev = pd.DataFrame(request["previous_runs"]) if request.get("previous_runs") else previous_runs_archive()
     features = build_features(nwp_frame(request), request["forecast_origin_utc"], request["turbine_id"],
                               prev, horizon_h=request["horizon_hours"])
-    out = predict(features, booster)
+    out = predict_distribution(features, models)
+    point_estimate = request.get("point_estimate", "median")
+    if point_estimate not in {"median", "mean", "cost"}:
+        raise ValueError("INVALID_INPUT: point_estimate must be median, mean or cost")
+    # LOC-31 will choose a cost-optimal quantile once imbalance coefficients are
+    # available in the request.  Until then cost safely follows the median.
+    point = out["mean"] if point_estimate == "mean" else out["p50"]
+    lower = np.minimum(out["p10"], point)
+    upper = np.maximum(out["p90"], point)
     return {
         "schema_version": "1.0",
         "model_version": meta["model_version"],
@@ -88,8 +131,8 @@ def predict_power(request: dict) -> dict:
         "horizon_hours": request["horizon_hours"],
         "interval_label": "start",
         "hourly": [
-            {"valid_time_utc": t.strftime("%Y-%m-%dT%H:%M:%SZ"), "power_normalized": float(r.p50),
-             "p10": float(r.p10), "p90": float(r.p90)}
-            for t, r in zip(features["valid_utc"], out.itertuples())
+            {"valid_time_utc": t.strftime("%Y-%m-%dT%H:%M:%SZ"), "power_normalized": float(value),
+             "p10": float(lo), "p90": float(hi)}
+            for t, value, lo, hi in zip(features["valid_utc"], point, lower, upper)
         ],
     }

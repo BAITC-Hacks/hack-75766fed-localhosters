@@ -29,8 +29,8 @@ class Settings:
             raise ValueError("HORIZON_HOURS must be 1..48")
         if not 0 <= result.issue_hour_utc <= 23 or result.availability_lag_hours < 0:
             raise ValueError("Invalid issue hour or availability lag")
-        if result.point_estimate not in {"median", "mean"}:
-            raise ValueError("POINT_ESTIMATE must be median or mean")
+        if result.point_estimate not in {"median", "mean", "cost"}:
+            raise ValueError("POINT_ESTIMATE must be median, mean or cost")
         return result
 # LOC-8: shared SCADA conventions.
 SCADA_TZ = "Etc/GMT-6"

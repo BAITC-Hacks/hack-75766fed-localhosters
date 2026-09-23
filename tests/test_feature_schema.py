@@ -98,7 +98,7 @@ def test_predict_is_ordered_and_blended():
     out = predict(f)
     assert list(out.columns) == ["p10", "p50", "p90"] and out.index.equals(f.index)
     assert ((out.p10 <= out.p50) & (out.p50 <= out.p90)).all()
-    np.testing.assert_allclose(out.p50, v1.predict(serve.load_model()[0], f))
+    assert ((0 <= out) & (out <= 1)).all(axis=None)
 
 
 def test_v1_adapter_returns_valid_power_forecast():
@@ -107,5 +107,13 @@ def test_v1_adapter_returns_valid_power_forecast():
     request = {"schema_version": "1.0", "turbine_id": "turbine_2", "forecast_origin_utc": "2026-01-31T18:00:00Z",
                "horizon_hours": 48, "weather_run_time_utc": "2026-01-31T06:00:00Z", "hourly": rows}
     result = PowerForecast.model_validate(v1.predict_power(request))
-    assert result.prediction_kind == "model" and result.model_version == "lightgbm-v1"
+    assert result.prediction_kind == "model" and result.model_version == "lightgbm-q-v1"
     assert len(result.hourly) == 48
+
+    mean_result = PowerForecast.model_validate(
+        v1.predict_power({**request, "point_estimate": "mean"})
+    )
+    assert any(
+        median.power_normalized != mean.power_normalized
+        for median, mean in zip(result.hourly, mean_result.hourly, strict=True)
+    )
