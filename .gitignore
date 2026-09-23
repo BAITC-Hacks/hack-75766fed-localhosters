@@ -9,7 +9,12 @@ __pycache__/
 .om_cache*
 .pytest_cache/
 .ruff_cache/
+.playwright-mcp/
 # LOC-15 хранит Previous Runs JSON и Parquet в Git для офлайн-воспроизведения.
 data/nwp_cache/single_runs/
 data/nwp_cache/archive/
 data/nwp_cache/historical_forecast/
+dashboard/node_modules/
+dashboard/dist/
+runs/*
+!runs/examples/
