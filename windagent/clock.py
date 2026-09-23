@@ -19,6 +19,7 @@ SCADA_TZ = timezone(timedelta(hours=SCADA_TZ_OFFSET_H))
 ISSUE_HOUR_UTC = 18
 HORIZON_H = 48
 AVAIL_LAG_H = {0: 8, 6: 7, 12: 8, 18: 7}  # цикл рана (UTC) -> часов до публичной доступности
+AVAIL_LAG = {"ecmwf_ifs": AVAIL_LAG_H}
 
 
 def _utc(dt: datetime) -> datetime:
@@ -27,12 +28,25 @@ def _utc(dt: datetime) -> datetime:
     return dt.astimezone(UTC)
 
 
-def available_at(run_init: datetime) -> datetime:
+def available_at(run_init: datetime, model: str = "ecmwf_ifs") -> datetime:
     """Момент, с которого ран можно использовать (публикация open data + запас)."""
     run_init = _utc(run_init)
     if run_init.hour not in AVAIL_LAG_H or run_init.minute or run_init.second:
         raise ValueError(f"run_init must be a 00/06/12/18Z cycle: {run_init.isoformat()}")
-    return run_init + timedelta(hours=AVAIL_LAG_H[run_init.hour])
+    return run_init + timedelta(hours=AVAIL_LAG[model][run_init.hour])
+
+
+def allowed_runs(issue_time: datetime, runs, model: str = "ecmwf_ifs") -> list[datetime]:
+    issue_time = _utc(issue_time)
+    return sorted(_utc(run) for run in runs if available_at(run, model) <= issue_time)
+
+
+def assert_as_of(issue_time: datetime, run_init: datetime, targets, model: str = "ecmwf_ifs") -> None:
+    issue_time = _utc(issue_time)
+    if available_at(run_init, model) > issue_time:
+        raise ValueError("NWP_LEAKAGE: run published after issue")
+    if any(_utc(target) + timedelta(hours=1) <= issue_time for target in targets):
+        raise ValueError("TARGET_LEAKAGE: target interval ended before issue")
 
 
 def is_available(run_init: datetime, at: datetime) -> bool:

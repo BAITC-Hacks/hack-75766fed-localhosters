@@ -128,6 +128,34 @@ def evaluate(df: pd.DataFrame) -> pd.DataFrame:
     return res
 
 
+def run_and_write(window: str, model: str = "v0", out: Path = ROOT / "submission", reports: Path = ROOT / "reports"):
+    df = run_window(window, model)
+    out.mkdir(parents=True, exist_ok=True)
+    per_issue = out / f"forecast_{window}_dayahead_{model}.csv"
+    df.to_csv(per_issue, index=False)
+    n_issues = df.issue_time_utc.nunique()
+    print(f"{per_issue}: {len(df)} rows, {n_issues} issues, runs used: {df.nwp_run_init_utc.nunique()}")
+
+    from scripts.flatten_submission import flatten
+    if window == "test":
+        hourly, plant = flatten(df, "2026-02-01T00:00", "2026-02-28T23:00")
+    else:
+        hourly, plant = flatten(df)
+    hourly_path = out / f"forecast_{window}_hourly_{model}.csv"
+    hourly.to_csv(hourly_path, index=False)
+    plant.to_csv(out / f"forecast_{window}_hourly_plant_{model}.csv", index=False)
+    print(f"{hourly_path}: {len(hourly)} rows, {len(plant)} hours")
+
+    if window == "dev":
+        res = evaluate(df)
+        reports.mkdir(parents=True, exist_ok=True)
+        rep = reports / f"backtest_{model}_{window}.csv"
+        res.to_csv(rep, index=False)
+        print(res.to_string(index=False))
+        print(f"-> {rep}")
+    return per_issue, hourly_path
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--window", choices=WINDOWS, default="test")
@@ -136,30 +164,7 @@ def main() -> None:
     ap.add_argument("--reports", type=Path, default=ROOT / "reports")
     args = ap.parse_args()
 
-    df = run_window(args.window, args.model)
-    args.out.mkdir(parents=True, exist_ok=True)
-    per_issue = args.out / f"forecast_{args.window}_dayahead_{args.model}.csv"
-    df.to_csv(per_issue, index=False)
-    n_issues = df.issue_time_utc.nunique()
-    print(f"{per_issue}: {len(df)} rows, {n_issues} issues, runs used: {df.nwp_run_init_utc.nunique()}")
-
-    from scripts.flatten_submission import flatten
-    if args.window == "test":
-        hourly, plant = flatten(df, "2026-02-01T00:00", "2026-02-28T23:00")
-    else:
-        hourly, plant = flatten(df)
-    hourly_path = args.out / f"forecast_{args.window}_hourly_{args.model}.csv"
-    hourly.to_csv(hourly_path, index=False)
-    plant.to_csv(args.out / f"forecast_{args.window}_hourly_plant_{args.model}.csv", index=False)
-    print(f"{hourly_path}: {len(hourly)} rows, {len(plant)} hours")
-
-    if args.window == "dev":
-        res = evaluate(df)
-        args.reports.mkdir(parents=True, exist_ok=True)
-        rep = args.reports / f"backtest_{args.model}_{args.window}.csv"
-        res.to_csv(rep, index=False)
-        print(res.to_string(index=False))
-        print(f"-> {rep}")
+    run_and_write(args.window, args.model, args.out, args.reports)
 
 
 if __name__ == "__main__":

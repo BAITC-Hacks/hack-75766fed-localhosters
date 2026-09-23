@@ -1,0 +1,18 @@
+# Карта доказательств (LOC-21)
+
+Первые пять строк — критерии кейса из условия (100 баллов). Последние пять — темы общего питча, их веса надо подтвердить по регламенту; здесь они не складываются с баллами кейса.
+
+| Критерий | Вес кейса | Видимое доказательство | Владелец | Статус |
+|---|---:|---|---|---|
+| Работоспособность | 25 | `make backtest-v0`, 2 784 строки `submission/forecast_test_dayahead_v0.csv` | Birzhan, Ramazan | v0 готов; LightGBM v1 ждёт LOC-10/12 |
+| Техреализация | 25 | `docs/architecture.md`, `runs/*/trace.jsonl`, `windagent/clock.py` | Birzhan | scripted + Clock готовы; LLM live не измерен |
+| README/воспроизводимость | 25 | `make setup`, `make verify`, Dockerfile | Birzhan | локальная проверка прошла; Docker build ожидает daemon |
+| Ценность | 15 | `docs/value.md`, формула KZT и проверяемые ссылки | Birzhan | в работе |
+| Оригинальность | 10 | per-hour NWP provenance; версионированные пересчёты; agent memory | Birzhan | первые две реализованы; memory v0 |
+| Ценность для рынка КЗ | уточнить | Питч: обоснование сокращения ошибки без выдуманной экономии | Birzhan | после метрик Akylbek |
+| Качество прогноза | уточнить | MAE/RMSE на Jan 2026 vs persistence в `reports/backtest_v0_dev.csv` | Birzhan, Akylbek | v0 готов, LightGBM pending |
+| Инновационность | уточнить | Наблюдаемые решения LLM с fallback и trace | Birzhan | scripted реализован; LLM pending |
+| Масштабирование | уточнить | Две турбины, переносимый кеш и адаптер погоды | Ramazan, Birzhan | базовый контракт |
+| Демо | уточнить | Дашборд прогноз/факт, ревизия, трейс | Birzhan | LOC-26 pending |
+
+В v0 оригинальность показывают per-hour provenance и сравнение последовательных выпусков. Cost-aware точка, GRIB и stacking остаются в развитии согласно отмене LOC-13 и текущему MVP-скоупу Linear.

@@ -9,7 +9,12 @@ __pycache__/
 .om_cache*
 .pytest_cache/
 .ruff_cache/
+.playwright-mcp/
 # сырой per-request кеш Open-Meteo (om_get); курируемые дампы в data/nwp_cache/*_feb2026/ и *.csv коммитятся
 data/nwp_cache/previous_runs/
 data/nwp_cache/archive/
 data/nwp_cache/historical_forecast/
+dashboard/node_modules/
+dashboard/dist/
+runs/*
+!runs/examples/
