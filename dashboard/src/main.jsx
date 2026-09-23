@@ -217,7 +217,7 @@ function Trace({ run }) {
     <div className="step-detail" aria-live="polite">
       <div className="detail-head"><span className="eyebrow">Шаг {s.step} из {run.trace.length}</span><h3>{TOOL_RU[s.tool] || s.tool}</h3></div>
       <dl>
-        <dt>Решение</dt><dd><code>{s.decision}</code> — {s.rationale}</dd>
+        <dt>Решение</dt><dd><code>{s.decision}</code> — {s.rationale}{s.model_id && <><br /><span className="muted">решал {s.model_id}{s.tokens ? ` · ${s.tokens.input} / ${s.tokens.output} токенов` : ''}{s.fallback_reason ? ` · откат: ${s.fallback_reason}` : ''}</span></>}</dd>
         <dt>Аргументы</dt><dd><pre>{pretty(s.args)}</pre></dd>
         <dt>Результат</dt><dd><pre>{pretty(s.result_summary)}</pre></dd>
       </dl>
@@ -240,6 +240,7 @@ function App() {
   const [selected, setSelected] = useState({ dev: 14, test: 0 });
   const [hover, setHover] = useState(null);
   const [runKind, setRunKind] = useState('dayahead');
+  const [decider, setDecider] = useState('llm');
 
   const index = useJson('index');
   const devData = useJson('dev');
@@ -266,7 +267,10 @@ function App() {
   const rows = useMemo(() => (issue && data ? seriesFor(issue, data.columns, turbine) : []), [issue, data, turbine]);
   const day = issue ? toScada(issue.issue_utc).toISOString().slice(0, 10) : null;
   const runs = agent.data?.[win]?.[day];
+  const llmRuns = win === 'test' ? agent.data?.llm_test?.[day] : null;
+  const traceRuns = decider === 'llm' && llmRuns ? llmRuns : runs;
   const run = runs?.[runKind] || runs?.dayahead;
+  const traceRun = traceRuns?.[runKind] || traceRuns?.dayahead;
   const plant = turbine === 'plant';
   const yMax = plant ? 2 * RATED_MW : 1;
   const yTicks = plant ? [0, 1.25, 2.5, 3.75, 5] : [0, 0.25, 0.5, 0.75, 1];
@@ -435,11 +439,20 @@ function App() {
         <section>
           <div className="section-top">
             <div><span className="eyebrow">03 · Решения агента</span><h2>Трейс выпуска</h2></div>
-            {win === 'test' && runs?.reissue && <Segmented label="Выпуск" value={runKind} onChange={setRunKind} options={[
-              { value: 'dayahead', label: '18:00 UTC' }, { value: 'reissue', label: '20:00 UTC · пересчёт' }]} />}
+            <div className="controls-inline">
+              {llmRuns && <Segmented label="Кто решает" value={decider} onChange={setDecider} options={[
+                { value: 'llm', label: `LLM · ${llmRuns.dayahead?.decision?.model_id || 'OpenAI'}` }, { value: 'rules', label: 'Правила' }]} />}
+              {win === 'test' && runs?.reissue && <Segmented label="Выпуск" value={runKind} onChange={setRunKind} options={[
+                { value: 'dayahead', label: '18:00 UTC' }, { value: 'reissue', label: '20:00 UTC · пересчёт' }]} />}
+            </div>
           </div>
-          <p>Каждый выпуск проходит 11 шагов. Код считает, агент решает, публиковать ли прогноз и нужен ли пересчёт. Выберите шаг, чтобы увидеть входы и результат.</p>
-          <Trace run={run} />
+          <p>Каждый выпуск проходит 11 шагов. Код считает прогноз, а решение — публиковать ли его и нужен ли пересчёт — принимает {llmRuns && decider === 'llm' ? 'LLM с объяснением для диспетчера; если ответ LLM не проходит проверку, решают правила' : 'детерминированный набор правил'}. Выберите шаг, чтобы увидеть входы и результат.</p>
+          {traceRun?.decision && <div className="decision-card">
+            <div><span>Решение</span><strong>{traceRun.decision.publish ? 'опубликовать' : 'не публиковать'} · <code>{traceRun.decision.reason}</code></strong></div>
+            <p>{traceRun.decision.summary_ru}</p>
+            <small>{traceRun.decision.planner === 'openai' ? `LLM ${traceRun.decision.model_id}` : 'правила'}{traceRun.decision.fallback_reason ? ` · откат на правила: ${traceRun.decision.fallback_reason}` : ''}{(() => { const t = traceRun.trace.find(s => s.tokens)?.tokens; return t ? ` · ${t.input} / ${t.output} токенов` : ''; })()}</small>
+          </div>}
+          <Trace run={traceRun} />
         </section>
 
         <section>
